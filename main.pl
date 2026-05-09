@@ -25,4 +25,4 @@ format('Kartu discard top: ~w',[Element]),
 assertz(discard_top(Element))
 nl,nl,
 format('Giliran ~w',[Pemain1]),retractall(jml_pemain(Jml)). % nanti retract all nya dihapus biar ke save
-
+% Belum Disanitasi (Output di luar yang diperbolehkan) dan Belum bisa ambil kartu

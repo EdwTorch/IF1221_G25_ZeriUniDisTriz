@@ -1,7 +1,7 @@
 cekInfo :-
     discard_top(kartu(Warna, Jenis, _)),
     write('Kartu discard top: '), write(Warna), write('-'), write(Jenis), nl,
-    list_pemain(L),
+    urutan_pemain(L),
     write('Urutan pemain: '), print_list(L), nl,
     write('Informasi pemain: '), nl,
     print_info_pemain(L), !.

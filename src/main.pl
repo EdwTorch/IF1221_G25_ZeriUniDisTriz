@@ -1,11 +1,11 @@
-:- dynamic(giliran/1).
-:- dynamic(kartu_tangan/2).
-:- dynamic(discard_top/1).
-:- dynamic(efek/1).
+:- dynamic(giliran/1).           % Menunjukan giliran siapa sekarang -> giliran(Pemain)
+:- dynamic(kartu_tangan/2).      % Menunjukan kartu yang ada di tangan pemain -> kartu_tangan(Pemain, ListKartu)
+:- dynamic(discard_top/1).       % Menunjukan kartu paling atas di menja -> discard_top(kartu(Warna, Jenis, normal/hide))
+:- dynamic(efek/1).              % Menunjukan efek yang berlaku saat ini (skip, reverse, etc), note: belum diimplementasiin (masih placeholder)
 :- dynamic(jml_pemain/1).
 :- dynamic(nama_pemain/2).
 :- dynamic(urutan_pemain/1).
-
+% struktur kartu -> kartu(Warna, Jenis, normal/hide)
 
 :- include('utils_startgame').
 

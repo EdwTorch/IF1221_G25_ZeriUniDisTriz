@@ -147,7 +147,7 @@ warna_kartu_discardpile(ListWarna), jenis_kartu_discardpile(ListAngka),
 random_select_tanpadel(ListWarna,1,Warna), random_select_tanpadel(ListAngka,1,Angka),
 Element = kartu(Warna,Angka,_).
 
-ekstrak_kartu_discardpile(Element,Warna,Angka):-
+ekstrak_kartu(Element,Warna,Angka):-
 Element = kartu(Warna,Angka,_).
 
 random_ambilkartu(Element):-

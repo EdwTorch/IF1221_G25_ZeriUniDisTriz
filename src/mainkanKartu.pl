@@ -14,7 +14,7 @@ cek_validitas(kartu(hitam, _, _), _) :- !.                     % --> valid jika 
 
 
 % FUNGSI MAINKAN KARTU 
-mainkanKartu(NomorUrut) :-
+/* mainkanKartu(NomorUrut) :-
     giliran(Pemain),                      % cek giliran 
     kartu_tangan(Pemain, ListKartu),
 
@@ -22,7 +22,7 @@ mainkanKartu(NomorUrut) :-
     ->  true
     ;   write('Nomor urut tidak valid! Membatalkan aksi.'), nl, fail
     ),
-    discard_top(KartuAtas),             %cek kartu teratas
+    discard_top(KartuAtas),             cek kartu teratas
 
 
     % Validasi kartu dimainkan
@@ -44,4 +44,4 @@ mainkanKartu(NomorUrut) :-
         % jika tidak valid
         write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl,
         fail
-    ).
+    ). */

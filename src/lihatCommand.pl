@@ -1,5 +1,5 @@
 % Rule utama lihatCommand
-lihatCommand :-
+/* lihatCommand :-
     discard_top(kartu(WarnaNow, JenisNow, _)),
     giliran(Pemain),
     kartu_tangan(Pemain, ListKartu),
@@ -17,7 +17,7 @@ lihatCommand :-
     write('Aksi pendukung yang tersedia:'), nl,
     write('1. lihatCommand'), nl,
     write('2. lihatKartu'), nl,
-    write('3. cekInfo'), nl, !.
+    write('3. cekInfo'), nl, !. */
 
 % Mengecek apakah pemain bisa mainkanKartu 
 valid_play([kartu(W,_,_)|_], WarnaNow, _) :- W == WarnaNow, !.

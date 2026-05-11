@@ -1,18 +1,19 @@
 cekInfo :-
-    discard_top(kartu(Warna, Jenis, _)),
-    write('Kartu discard top: '), write(Warna), write('-'), write(Jenis), nl,
-    urutan_pemain(L),
-    write('Urutan pemain: '), print_list(L), nl,
+    discard_top(kartu(WarnaTeratas, JenisTeratas, _)),
+    write('Kartu discard top: '), write(WarnaTeratas), write('-'), write(JenisTeratas), nl,
+    urutan_pemain(DaftarPemain),
+    write('Urutan pemain: '), print_list_pemain(DaftarPemain), nl,
     write('Informasi pemain: '), nl,
-    print_info_pemain(L), !.
+    print_info_pemain(DaftarPemain), !.
 
-print_list([H]) :- write(H), !.
-print_list([H|T]) :-
-    write(H), write(', '), print_list(T).
+print_list_pemain([Nama]) :-
+    write(Nama), !.
+print_list_pemain([Nama|SisaDaftar]) :-
+    write(Nama), write(', '), print_list_pemain(SisaDaftar).
 
 print_info_pemain([]).
-print_info_pemain([Pemain|T]) :-
-    kartu_tangan(Pemain, KartuTangan),
-    length(KartuTangan, JmlKartu),
-    write('- '), write(Pemain), write(': '), write(JmlKartu), write(' kartu'), nl,
-    print_info_pemain(T).
+print_info_pemain([NamaPemain|SisaPemain]) :-
+    kartu_tangan(NamaPemain, ListKartuTangan),
+    length(ListKartuTangan, JmlKartu),
+    write('- '), write(NamaPemain), write(': '), write(JmlKartu), write(' kartu'), nl,
+    print_info_pemain(SisaPemain).

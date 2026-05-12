@@ -123,8 +123,8 @@ random_ambilkartu(Element):-
 warna_kartu_ambilkartu(ListWarna), jenis_kartu_ambilkartu_bukanwild(ListJenis),
 jenis_kartu_wild(ListWild),
 random_select_tanpadel(ListWarna,1,Warna),
-(Warna == 'hitam' -> random_select_tanpadel(ListWild,1,Wild), Element = kartu(Warna,Wild,_);
-random_select_tanpadel(ListJenis,1,Jenis), Element = kartu(Warna,Jenis,_)).
+(Warna == 'hitam' -> random_select_tanpadel(ListWild,1,Wild), Element = kartu(Warna,Wild,normal);
+random_select_tanpadel(ListJenis,1,Jenis), Element = kartu(Warna,Jenis,normal)).
 
 ambilkan_kartu7(DaftarKartu):-
 ambil_kartu7help(DaftarKartu,[],7).

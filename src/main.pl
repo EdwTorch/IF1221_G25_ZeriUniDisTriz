@@ -52,9 +52,9 @@ get_idx(ListNama,Nama,Idx),jml_pemain(Jml),
 format('~w mendapatkan kartu: ~w-~w',[Nama,Warna,Jenis]),nl,nl,
 kartu_tangan(Nama,KartuLama),
 insert_tail(KartuLama,Element,KartuBaru),
-retract(tangan_pemain(Nama,_)),
-assertz(tangan_pemain(Nama,KartuBaru)),
-NewIdx is Idx +1, (NewIdx>Jml -> NewestIdx is 1;NewestIdx is NewIdx),
+retract(kartu_tangan(Nama,_)),
+assertz(kartu_tangan(Nama,KartuBaru)),
+NewIdx is Idx +1, (NewIdx>=Jml -> NewestIdx is (NewIdx mod Jml) ;NewestIdx is NewIdx),
 get_idx(ListNama,NextNama,NewestIdx),
 format('Giliran ~w',[NextNama]),nl,
 retractall(urutan_pemain(_,_)), retractall(giliran(_)),assertz(giliran(NextNama)),
@@ -100,6 +100,8 @@ lihatKartu :-
 mainkanKartu(NomorUrut) :-
     giliran(Pemain),                      % cek giliran 
     kartu_tangan(Pemain, ListKartu),
+    urutan_pemain(ListNama,Idx),
+    jml_pemain(Jml),
 
     (   ambil_kartu_ke(NomorUrut, ListKartu, KartuPilihan)      % ambil kartu dari list
     ->  true
@@ -121,6 +123,11 @@ mainkanKartu(NomorUrut) :-
         retract(discard_top(KartuAtas)),                                   % update discard_top
         assertz(discard_top(kartu(Warna, Jenis, normal))),
         nl, write('--- Giliran Selesai ---'), nl,                          % ganti giliran
+        NewIdx is Idx +1, (NewIdx>=Jml -> NewestIdx is (NewIdx mod Jml);NewestIdx is NewIdx),
+        get_idx(ListNama,NextNama,NewestIdx),
+        format('Giliran ~w',[NextNama]),nl,
+        retractall(urutan_pemain(_,_)), retractall(giliran(_)),assertz(giliran(NextNama)),
+        assertz(urutan_pemain(ListNama,NewestIdx)),
         write('(Catatan: Fungsi pindah giliran akan diintegrasikan nanti)'), nl
         
     ;   
@@ -128,6 +135,8 @@ mainkanKartu(NomorUrut) :-
         write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl,
         fail
     ).
+
+    % 
 % Rule utama endGame
 endGame :-
     giliran(Pemenang),

@@ -134,14 +134,8 @@ ambil_kartu7help(DaftarKartu,ListKartu,JmlKartuSisa):-
 NextJml is JmlKartuSisa -1, random_ambilkartu(Element),
 insert_tail(ListKartu,Element,Listbaru), ambil_kartu7help(DaftarKartu,Listbaru,NextJml).
 
-kartu_awalpemain(Daftarkartusemua,Jml):-
-kartu_awalpemainhelp(Daftarkartusemua, [],Jml).
 
-kartu_awalpemainhelp(DaftarKartusemua, DaftarKartusemua,0).
-kartu_awalpemainhelp(DaftarKartusemua, ListSementaraSemua,Jml):-
-NextJml is Jml -1, ambilkan_kartu7(DaftarKartu),insert_tail(ListSementaraSemua,DaftarKartu,Listbaru),
-kartu_awalpemainhelp(DaftarKartusemua,Listbaru,NextJml).
-
-simpan_kartu_pemain([HeadNama|TailNama],[HeadKartu|TailKartu]):-
-    assertz(kartu_tangan(HeadNama,HeadKartu)),
-    simpan_kartu_pemain(TailNama,TailKartu).
+simpan_kartu([],_,_).
+simpan_kartu([HeadUrutan|TailUrutan],Urut,Jml):-
+    ambilkan_kartu7(Daftarkartu), assertz(kartu_tangan(HeadUrutan,Daftarkartu)),!,
+    simpan_kartu(TailUrutan,Urut,Jml).

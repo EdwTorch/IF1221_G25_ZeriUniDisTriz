@@ -23,6 +23,7 @@ copy(DaftarPemain,ListPemain),     % Mengcopy Daftar Pemain ke ListPemain
 kocokurutan(ListPemain,Jml,[],UrutanPemain), % Mengocok Urutan Pemain ke dalam Variable UrutanPemain
 nl,nl,
 write('Setiap pemain mendapatkan 7 kartu acak'),
+simpan_kartu(UrutanPemain,UrutanPemain,Jml),
 /*kartu_awalpemain(DaftarKartuSemua,Jml),
 simpan_kartu_pemain(UrutanPemain,DaftarKartuSemua),*/ % belum bisa (Stack Overflow)
 nl,nl,
@@ -59,7 +60,7 @@ format('Giliran ~w',[NextNama]),nl,
 retractall(urutan_pemain(_,_)), retractall(giliran(_)),assertz(giliran(NextNama)),
 assertz(urutan_pemain(ListNama,NewestIdx)). 
 
-% Pengambilan Kartu belum dimasukkan ke dalam list kartu milik Pemain tersebut
+% Pengambilan Kartu belum dimasukkan ke dalam list kartu milik Pemain tersebut, dan belum bisa ganti giliran
 
 cekInfo :-
     discard_top(kartu(WarnaTeratas, JenisTeratas, _)),

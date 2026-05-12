@@ -1,4 +1,5 @@
 :- include('utils.pl').
+:- dynamic(kartu_tangan/2).
 % fungsi input Jumlah Pemain
 % Input Valid Jika Integer 2<=Jml<=4
 inputJml(Jml):- write('Masukkan jumlah pemain: '), read(InputJml), 
@@ -124,3 +125,23 @@ jenis_kartu_wild(ListWild),
 random_select_tanpadel(ListWarna,1,Warna),
 (Warna == 'hitam' -> random_select_tanpadel(ListWild,1,Wild), Element = kartu(Warna,Wild,_);
 random_select_tanpadel(ListJenis,1,Jenis), Element = kartu(Warna,Jenis,_)).
+
+ambilkan_kartu7(DaftarKartu):-
+ambil_kartu7help(DaftarKartu,[],7).
+
+ambil_kartu7help(DaftarKartu,DaftarKartu,0).
+ambil_kartu7help(DaftarKartu,ListKartu,JmlKartuSisa):-
+NextJml is JmlKartuSisa -1, random_ambilkartu(Element),
+insert_tail(ListKartu,Element,Listbaru), ambil_kartu7help(DaftarKartu,Listbaru,NextJml).
+
+kartu_awalpemain(Daftarkartusemua,Jml):-
+kartu_awalpemainhelp(Daftarkartusemua, [],Jml).
+
+kartu_awalpemainhelp(DaftarKartusemua, DaftarKartusemua,0).
+kartu_awalpemainhelp(DaftarKartusemua, ListSementaraSemua,Jml):-
+NextJml is Jml -1, ambilkan_kartu7(DaftarKartu),insert_tail(ListSementaraSemua,DaftarKartu,Listbaru),
+kartu_awalpemainhelp(DaftarKartusemua,Listbaru,NextJml).
+
+simpan_kartu_pemain([HeadNama|TailNama],[HeadKartu|TailKartu]):-
+    assertz(kartu_tangan(HeadNama,HeadKartu)),
+    simpan_kartu_pemain(TailNama,TailKartu).

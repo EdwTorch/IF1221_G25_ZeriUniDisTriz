@@ -18,11 +18,13 @@
 % Kode StartGame Telah disanitasi, kecuali input nama (memang belum bisa disanitasi)
 startGame:- retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),
 retractall(giliran(_)), retractall(discard_top(_)), retractall(kartu_tangan(_,_)),  % reset semua dynamic
-inputJml(Jml),assertz(game_started),assertz(jml_pemain(Jml)),inputPemain(Jml,DaftarPemain), % input pemain dan Jumlah Pemain
+inputJml(Jml),assertz(jml_pemain(Jml)),inputPemain(Jml,DaftarPemain), % input pemain dan Jumlah Pemain
 copy(DaftarPemain,ListPemain),     % Mengcopy Daftar Pemain ke ListPemain
 kocokurutan(ListPemain,Jml,[],UrutanPemain), % Mengocok Urutan Pemain ke dalam Variable UrutanPemain
 nl,nl,
 write('Setiap pemain mendapatkan 7 kartu acak'),
+/*kartu_awalpemain(DaftarKartuSemua,Jml),
+simpan_kartu_pemain(UrutanPemain,DaftarKartuSemua),*/ % belum bisa (Stack Overflow)
 nl,nl,
 get_head(UrutanPemain,Pemain1), % Ambil Pemain Pertama
 assertz(giliran(Pemain1)),
@@ -47,6 +49,10 @@ ambilKartu:-
 random_ambilkartu(Element),ekstrak_kartu(Element,Warna,Jenis), urutan_pemain(ListNama,Idx), 
 get_idx(ListNama,Nama,Idx),jml_pemain(Jml), 
 format('~w mendapatkan kartu: ~w-~w',[Nama,Warna,Jenis]),nl,nl,
+kartu_tangan(Nama,KartuLama),
+insert_tail(KartuLama,Element,KartuBaru),
+retract(tangan_pemain(Nama,_)),
+assertz(tangan_pemain(Nama,KartuBaru)),
 NewIdx is Idx +1, (NewIdx>Jml -> NewestIdx is 1;NewestIdx is NewIdx),
 get_idx(ListNama,NextNama,NewestIdx),
 format('Giliran ~w',[NextNama]),nl,
@@ -58,7 +64,7 @@ assertz(urutan_pemain(ListNama,NewestIdx)).
 cekInfo :-
     discard_top(kartu(WarnaTeratas, JenisTeratas, _)),
     write('Kartu discard top: '), write(WarnaTeratas), write('-'), write(JenisTeratas), nl,
-    urutan_pemain(DaftarPemain,Idx),
+    urutan_pemain(DaftarPemain,_),
     write('Urutan pemain: '), print_list_pemain(DaftarPemain), nl,
     write('Informasi pemain: '), nl,
     print_info_pemain(DaftarPemain), !.
@@ -126,7 +132,7 @@ endGame :-
     giliran(Pemenang),
     format('Permainan selesai! ~w menghabiskan semua kartunya!~n~n', [Pemenang]),
     write('Berikut perhitungan poin sisa kartu:'), nl,
-    urutan_pemain(DaftarPemain,Idx),
+    urutan_pemain(DaftarPemain,_),
     tampilkan_perhitungan(DaftarPemain), nl,
     predsort(bandingkan_pemain, DaftarPemain, SortedL),
     write('Urutan pemenang:'), nl,

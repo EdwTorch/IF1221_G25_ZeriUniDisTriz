@@ -4,7 +4,7 @@ insert_head(In,List,[In|List]).
 copy(Isi,Isi).
 
 % delete pada komponen pada index tertentu
-del([_|Tail],0,Tail).
+del([_|Tail],0,Tail):-!.
 del([Head|Tail],Index,[Head|Updatedtail]):- Index >0, Newindex is Index-1, del(Tail,Newindex,Updatedtail).
 
 % Bisa Mengekstrak Element Maupun Idx dari Sebuah Komponen dalam List

@@ -5,6 +5,8 @@
 :- dynamic(jml_pemain/1). % menyimpan jumlah pemain saat ini
 :- dynamic(urutan_pemain/2). % urutan_pemain(ListUrutan,IdxSaatini)
 :- dynamic(game_started/0). % Menunjukkan state apakah game sudah dimulai.
+:- dynamic(arah/1).             % arah kemana default ke kanan.
+:- dynamic(list_uni/1).         % list orang yang pernah ngomon UNIIIIIIIIII
 % struktur kartu -> kartu(Warna, Jenis, normal/hide)
  
 :- include('startGame_ambilKartu.pl').
@@ -13,12 +15,12 @@
 :- include('lihatCommand.pl').
 :- include('mainkanKartu.pl').
 :- include('lihatKartu.pl').
-
+:- include('saveloadGame.pl').
 
 % Kode StartGame Telah disanitasi, kecuali input nama (memang belum bisa disanitasi)
 startGame:- retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),
 retractall(giliran(_)), retractall(discard_top(_)), retractall(kartu_tangan(_,_)),  % reset semua dynamic
-inputJml(Jml),assertz(jml_pemain(Jml)),inputPemain(Jml,DaftarPemain), % input pemain dan Jumlah Pemain
+inputJml(Jml),assertz(jml_pemain(Jml)),inputPemain(Jml,DaftarPemain), assertz(arah('kanan')), assertz(list_uni([]))% input pemain dan Jumlah Pemain
 copy(DaftarPemain,ListPemain),     % Mengcopy Daftar Pemain ke ListPemain
 kocokurutan(ListPemain,Jml,[],UrutanPemain), % Mengocok Urutan Pemain ke dalam Variable UrutanPemain
 nl,nl,
@@ -150,3 +152,48 @@ endGame :-
     nth1(1, SortedL, Juara1),
     format('~nSelamat, ~w menjadi pemenang!~n', [Juara1]),
     retractall(game_started).
+
+saveGame:- 
+    % list_uni(ListUni),
+    urutan_pemain(Urutan,_),
+    giliran(Nama),
+    arah(ArahPermainan),
+    discard_top(KartuAtas),
+    ekstrak_kartu(KartuAtas,Warna,Jenis),
+    write('Masukkan nama file penyimpanan: '),
+    read(Input),
+    atom_concat(Input, '.txt', SaveFileName),
+    atom_concat(Input, 'loadgame.txt', LoadFileName),
+    open(SaveFileName,write,SaveGameFormat),
+    open(LoadFileName,write,LoadGameFormat),
+    format(SaveGameFormat,'urutan_pemain: ~w',[Urutan]),
+    nl(SaveGameFormat),
+    format(LoadGameFormat,'~w.',[Urutan]),
+    nl(LoadGameFormat),
+    format(SaveGameFormat,'giliran:~w',[Nama]),
+    nl(SaveGameFormat),
+    format(LoadGameFormat,'~w.',[Nama]),
+    nl(LoadGameFormat),
+    format(SaveGameFormat,'discard_top:~w-~w',[Warna,Jenis]),
+    nl(SaveGameFormat),
+    format(LoadGameFormat,'~w.',[Warna]),
+    nl(LoadGameFormat),
+    format(LoadGameFormat,'~w.',[Jenis]),
+    nl(LoadGameFormat),
+    print_kartu_sisa(Urutan,LoadGameFormat,SaveGameFormat),
+    format(SaveGameFormat,'arah_permainan:~w',[ArahPermainan]),
+    nl(SaveGameFormat),
+    format(LoadGameFormat,'~w.',[ArahPermainan]),
+    nl(LoadGameFormat),
+    format(SaveGameFormat,'warna_aktif:~w',[Warna]),
+    nl(SaveGameFormat),
+    format(SaveGameFormat,'status_UNI:~w',[ListUni]),
+    nl(SaveGameFormat),
+    format(LoadGameFormat,'~w.',[ListUni]),
+    nl(LoadGameFormat),
+    format('Status permainan berhasil disimpan ke ~w.txt.',[Input]),
+    close(SaveGameFormat),
+    close(LoadGameFormat).
+    
+
+    

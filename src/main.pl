@@ -19,7 +19,7 @@
 
 % Kode StartGame Telah disanitasi, kecuali input nama (memang belum bisa disanitasi)
 startGame:- retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),
-retractall(giliran(_)), retractall(discard_top(_)), retractall(kartu_tangan(_,_)), retractall(list_uni(_)), % reset semua dynamic
+retractall(giliran(_)), retractall(discard_top(_)), retractall(kartu_tangan(_,_)), retractall(list_uni(_)),retractall(arah(_)), % reset semua dynamic
 inputJml(Jml),assertz(jml_pemain(Jml)),inputPemain(Jml,DaftarPemain), assertz(arah('kanan')), assertz(list_uni([])),% input pemain dan Jumlah Pemain
 copy(DaftarPemain,ListPemain),     % Mengcopy Daftar Pemain ke ListPemain
 kocokurutan(ListPemain,Jml,[],UrutanPemain), % Mengocok Urutan Pemain ke dalam Variable UrutanPemain
@@ -54,7 +54,7 @@ kartu_tangan(Nama,KartuLama),
 insert_tail(KartuLama,Element,KartuBaru),
 retract(kartu_tangan(Nama,_)),
 assertz(kartu_tangan(Nama,KartuBaru)),
-NewIdx is Idx +1, (NewIdx>=Jml -> NewestIdx is (NewIdx mod Jml) ;NewestIdx is NewIdx),
+next_giliran(Idx,NewestIdx,Jml),
 get_idx(ListNama,NextNama,NewestIdx),
 format('Giliran ~w',[NextNama]),nl,
 retractall(urutan_pemain(_,_)), retractall(giliran(_)),assertz(giliran(NextNama)),
@@ -123,7 +123,7 @@ mainkanKartu(NomorUrut) :-
         retract(discard_top(KartuAtas)),                                   % update discard_top
         assertz(discard_top(kartu(Warna, Jenis, normal))),
         nl, write('--- Giliran Selesai ---'), nl,                          % ganti giliran
-        NewIdx is Idx +1, (NewIdx>=Jml -> NewestIdx is (NewIdx mod Jml);NewestIdx is NewIdx),
+        next_giliran(Idx,NewestIdx,Jml),
         get_idx(ListNama,NextNama,NewestIdx),
         format('Giliran ~w',[NextNama]),nl,
         retractall(urutan_pemain(_,_)), retractall(giliran(_)),assertz(giliran(NextNama)),

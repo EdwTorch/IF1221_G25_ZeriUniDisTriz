@@ -1,5 +1,6 @@
 :- include('utils.pl').
 :- dynamic(kartu_tangan/2).
+:- dynamic(arah/1).
 % fungsi input Jumlah Pemain
 % Input Valid Jika Integer 2<=Jml<=4
 inputJml(Jml):- write('Masukkan jumlah pemain: '), read(InputJml), 
@@ -139,3 +140,10 @@ simpan_kartu([],_,_).
 simpan_kartu([HeadUrutan|TailUrutan],Urut,Jml):-
     ambilkan_kartu7(Daftarkartu), assertz(kartu_tangan(HeadUrutan,Daftarkartu)),!,
     simpan_kartu(TailUrutan,Urut,Jml).
+
+next_giliran(Idx,NewestIdx,Jml):-
+arah(ArahSaatini),
+(ArahSaatini == 'kanan'-> (NewIdx is Idx +1, (NewIdx>=Jml -> NewestIdx is (NewIdx mod Jml) ;NewestIdx is NewIdx));
+NewIdx is Idx-1, (NewIdx<0 -> NewestIdx is (NewIdx mod Jml);NewestIdx is NewIdx)).
+
+  

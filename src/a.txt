@@ -1,7 +1,8 @@
 urutan_pemain: [A,B]
 giliran:A
-discard_top:biru-5
-Kartu_A:[kartu(biru,5,normal),kartu(merah,9,normal),kartu(merah,8,normal),kartu(hitam,plus_empat,normal),kartu(biru,6,normal),kartu(kuning,plus_dua,normal),kartu(hijau,4,normal)]
-Kartu_B:[kartu(hitam,wildcard,normal),kartu(merah,4,normal),kartu(merah,9,normal),kartu(hitam,wildcard,normal),kartu(merah,4,normal),kartu(merah,8,normal),kartu(merah,reverse,normal)]
+discard_top:merah-9
+Kartu_A:[kartu(merah,4,normal),kartu(hitam,plus_empat,normal),kartu(hijau,8,normal),kartu(hijau,1,normal),kartu(hitam,wildcard,normal),kartu(hijau,4,normal),kartu(hijau,4,normal)]
+Kartu_B:[kartu(hitam,plus_empat,normal),kartu(hijau,3,normal),kartu(hitam,plus_empat,normal),kartu(biru,7,normal),kartu(merah,9,normal),kartu(hitam,plus_empat,normal),kartu(hijau,reverse,normal)]
 arah_permainan:kanan
-warna_aktif:biru
+warna_aktif:merah
+status_UNI:_192

@@ -19,15 +19,13 @@
 
 % Kode StartGame Telah disanitasi, kecuali input nama (memang belum bisa disanitasi)
 startGame:- retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),
-retractall(giliran(_)), retractall(discard_top(_)), retractall(kartu_tangan(_,_)),  % reset semua dynamic
-inputJml(Jml),assertz(jml_pemain(Jml)),inputPemain(Jml,DaftarPemain), assertz(arah('kanan')), assertz(list_uni([]))% input pemain dan Jumlah Pemain
+retractall(giliran(_)), retractall(discard_top(_)), retractall(kartu_tangan(_,_)), retractall(list_uni(_)), % reset semua dynamic
+inputJml(Jml),assertz(jml_pemain(Jml)),inputPemain(Jml,DaftarPemain), assertz(arah('kanan')), assertz(list_uni([])),% input pemain dan Jumlah Pemain
 copy(DaftarPemain,ListPemain),     % Mengcopy Daftar Pemain ke ListPemain
 kocokurutan(ListPemain,Jml,[],UrutanPemain), % Mengocok Urutan Pemain ke dalam Variable UrutanPemain
 nl,nl,
 write('Setiap pemain mendapatkan 7 kartu acak'),
 simpan_kartu(UrutanPemain,UrutanPemain,Jml),
-/*kartu_awalpemain(DaftarKartuSemua,Jml),
-simpan_kartu_pemain(UrutanPemain,DaftarKartuSemua),*/ % belum bisa (Stack Overflow)
 nl,nl,
 get_head(UrutanPemain,Pemain1), % Ambil Pemain Pertama
 assertz(giliran(Pemain1)),
@@ -168,11 +166,11 @@ saveGame:-
     open(LoadFileName,write,LoadGameFormat),
     format(SaveGameFormat,'urutan_pemain: ~w',[Urutan]),
     nl(SaveGameFormat),
-    format(LoadGameFormat,'~w.',[Urutan]),
+    format(LoadGameFormat,'~q.',[Urutan]),
     nl(LoadGameFormat),
     format(SaveGameFormat,'giliran:~w',[Nama]),
     nl(SaveGameFormat),
-    format(LoadGameFormat,'~w.',[Nama]),
+    format(LoadGameFormat,'~q.',[Nama]),
     nl(LoadGameFormat),
     format(SaveGameFormat,'discard_top:~w-~w',[Warna,Jenis]),
     nl(SaveGameFormat),
@@ -187,9 +185,9 @@ saveGame:-
     nl(LoadGameFormat),
     format(SaveGameFormat,'warna_aktif:~w',[Warna]),
     nl(SaveGameFormat),
-    format(SaveGameFormat,'status_UNI:~w',[ListUni]),
+    format(SaveGameFormat,'status_UNI:~q',[ListUni]),
     nl(SaveGameFormat),
-    format(LoadGameFormat,'~w.',[ListUni]),
+    format(LoadGameFormat,'~q.',[ListUni]),
     nl(LoadGameFormat),
     format('Status permainan berhasil disimpan ke ~w.txt.',[Input]),
     close(SaveGameFormat),

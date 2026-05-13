@@ -1,10 +1,10 @@
 % Rule utama lihatKartu
-lihatKartu :-
+/* lihatKartu :-
     giliran(Pemain),
     (kartu_tangan(Pemain, ListKartu) ->
         write('Berikut kartu yang anda miliki.'), nl,
         print_list_kartu(ListKartu, 1) ;
-        write('Data kartu tidak ditemukan!'), nl), !.
+        write('Data kartu tidak ditemukan!'), nl), !. Dipindah ke main */
 
 % Rule untuk output kartu
 print_list_kartu([],_).

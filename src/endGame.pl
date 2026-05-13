@@ -1,64 +1,68 @@
 % Rule poin per jenis kartu
 poin_kartu(Jenis, Poin) :- integer(Jenis), Poin is Jenis, !.
-poin_kartu(Jenis, 10) :- member(Jenis, [skip, reverse, draw_two]), !.
-poin_kartu(Jenis, 20) :- member(Jenis, [wild, wild_draw_four, mimic]), !.
+poin_kartu(Jenis, 10) :- member(Jenis, [skip, reverse, plus_dua]), !.
+poin_kartu(Jenis, 20) :- member(Jenis, [wild, plus_empat, mimic]), !.
 
 % Rule menjabarkan perhitungan
 jabarkan_kartu([], "", "", 0).
-jabarkan_kartu([kartu(W, J, _)], Deskripsi, PoinStr, P) :-
-    poin_kartu(J, P),
-    atomic_list_concat([W, '-', J], Deskripsi),
-    atom_number(PoinStr, P), !.
-jabarkan_kartu([kartu(W, J, _)|T], Deskripsi, PoinStr, Total) :-
-    poin_kartu(J, P),
-    jabarkan_kartu(T, SisaD, SisaP, SisaTotal),
-    Total is P + SisaTotal,
-    atomic_list_concat([W, '-', J, ' + ', SisaD], Deskripsi),
-    atomic_list_concat([P, ' + ', SisaP], PoinStr).
+jabarkan_kartu([kartu(Warna, Jenis, _)], Deskripsi, PoinStr, Poin) :-
+    poin_kartu(Jenis, Poin),
+    atomic_list_concat([Warna, '-', Jenis], Deskripsi),
+    atom_number(PoinStr, Poin), !.
+jabarkan_kartu([kartu(Warna, Jenis, _)|Sisa], DeskripsiTotal, PoinStrTotal, Total) :-
+    poin_kartu(Jenis, Poin),
+    jabarkan_kartu(Sisa, SisaDeskripsi, SisaPoin, SisaTotal),
+    Total is Poin + SisaTotal,
+    atomic_list_concat([Warna, '-', Jenis, ' + ', SisaDeskripsi], DeskripsiTotal),
+    atomic_list_concat([Poin, ' + ', SisaPoin], PoinStrTotal).
 
 % Rule hitung total poin
-total_poin_pemain(P, Total) :- kartu_tangan(P, K), hitung_list_poin(K, Total).
+
+total_poin_pemain(NamaPemain, TotalPoin) :- kartu_tangan(NamaPemain, Kartu), hitung_list_poin(Kartu, TotalPoin).
+
 hitung_list_poin([], 0).
-hitung_list_poin([kartu(_, J, _)|T], Total) :- poin_kartu(J, P), hitung_list_poin(T, S), Total is P + S.
+hitung_list_poin([kartu(_, JenisKartu, _)|SisaKartu], TotalPoin) :- poin_kartu(JenisKartu, Poin), hitung_list_poin(SisaKartu, SisaPoin), TotalPoin is Poin + SisaPoin.
 
 % Rule peringkat
-lebih_baik(P1, P2) :-
-    total_poin_pemain(P1, Poin1),
-    total_poin_pemain(P2, Poin2),
+bandingkan_pemain(Result, Pemain1, Pemain2) :- 
+    (lebih_baik(Pemain1, Pemain2) -> Result = (<) ; Result = (>)).
+
+lebih_baik(Pemain1, Pemain2) :-
+    total_poin_pemain(Pemain1, Poin1),
+    total_poin_pemain(Pemain2, Poin2),
     (Poin1 < Poin2 -> true ; Poin1 > Poin2 -> fail ;
-        kartu_tangan(P1, K1), length(K1, L1),
-        kartu_tangan(P2, K2), length(K2, L2),
+        kartu_tangan(Pemain1, Kartu1), length(Kartu1, L1),
+        kartu_tangan(Pemain2, Kartu2), length(Kartu2, L2),
         (L1 < L2 -> true ; L1 > L2 -> fail ;
-            urutan_pemain(List),
-            nth1(Idx1, List, P1),
-            nth1(Idx2, List, P2),
+            urutan_pemain(DaftarUrutan),
+            nth1(Idx1, DaftarUrutan, Pemain1),
+            nth1(Idx2, DaftarUrutan, Pemain2),
             Idx1 < Idx2)).
 
 % Rule utama endGame
-endGame :-
+/* endGame :-
     giliran(Pemenang),
     format('Permainan selesai! ~w menghabiskan semua kartunya!~n~n', [Pemenang]),
     write('Berikut perhitungan poin sisa kartu:'), nl,
-    urutan_pemain(L),
-    tampilkan_perhitungan(L), nl,
-    predsort(bandingkan_pemain, L, SortedL),
+    urutan_pemain(DaftarPemain),
+    tampilkan_perhitungan(DaftarPemain), nl,
+    predsort(bandingkan_pemain, DaftarPemain, SortedL),
     write('Urutan pemenang:'), nl,
     tampilkan_peringkat(SortedL, 1),
     nth1(1, SortedL, Juara1),
     format('~nSelamat, ~w menjadi pemenang!~n', [Juara1]),
-    retractall(game_started).
+    retractall(game_started). Dipindah Ke Main*/
 
-% Helper
+% Helper menampilkan
 tampilkan_perhitungan([]).
-tampilkan_perhitungan([P|T]) :-
-    kartu_tangan(P, K),
-    (K == [] -> format('~w: kartu habis = 0 poin~n', [P]) ;
-        jabarkan_kartu(K, D, PS, Tot),
-        format('~w: ~w = ~w = ~w poin~n', [P, D, PS, Tot])),
-    tampilkan_perhitungan(T).
-bandingkan_pemain(Res, P1, P2) :- (lebih_baik(P1, P2) -> Res = < ; Res = >).
+tampilkan_perhitungan([PemainSekarang|SisaPemain]) :-
+    kartu_tangan(PemainSekarang, ListKartuTangan),
+    (ListKartuTangan == [] -> format('~w: kartu habis = 0 poin~n', [PemainSekarang]) ;
+        jabarkan_kartu(ListKartuTangan, DeskripsiKartu, PoinStr, TotalPoin),
+        format('~w: ~w = ~w = ~d poin~n', [PemainSekarang, DeskripsiKartu, PoinStr, TotalPoin])),
+    tampilkan_perhitungan(SisaPemain).
 tampilkan_peringkat([], _).
-tampilkan_peringkat([P|T], N) :-
-    total_poin_pemain(P, Poin),
-    format('~w. ~w (~w poin)~n', [N, P, Poin]),
-    N1 is N + 1, tampilkan_peringkat(T, N1).
+tampilkan_peringkat([PemainSekarang|SisaPemain], N) :-
+    total_poin_pemain(PemainSekarang, Poin),
+    format('~d. ~w (~d poin)~n', [N, PemainSekarang, Poin]),
+    N1 is N + 1, tampilkan_peringkat(SisaPemain, N1).

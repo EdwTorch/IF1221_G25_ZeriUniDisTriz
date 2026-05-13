@@ -1,0 +1,8 @@
+['A','B'].
+'A'.
+merah.
+9.
+[kartu(merah,4,normal),kartu(hitam,plus_empat,normal),kartu(hijau,8,normal),kartu(hijau,1,normal),kartu(hitam,wildcard,normal),kartu(hijau,4,normal),kartu(hijau,4,normal)].
+[kartu(hitam,plus_empat,normal),kartu(hijau,3,normal),kartu(hitam,plus_empat,normal),kartu(biru,7,normal),kartu(merah,9,normal),kartu(hitam,plus_empat,normal),kartu(hijau,reverse,normal)].
+kanan.
+_192.

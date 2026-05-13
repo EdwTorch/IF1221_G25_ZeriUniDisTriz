@@ -1,0 +1,8 @@
+urutan_pemain: [B,A]
+giliran:B
+discard_top:merah-6
+Kartu_B:[kartu(merah,plus_dua,normal),kartu(hijau,6,normal),kartu(kuning,reverse,normal),kartu(hitam,wildcard,normal),kartu(merah,reverse,normal),kartu(biru,6,normal),kartu(kuning,0,normal)]
+Kartu_A:[kartu(merah,4,normal),kartu(merah,2,normal),kartu(hitam,plus_empat,normal),kartu(merah,0,normal),kartu(merah,4,normal),kartu(hijau,7,normal),kartu(biru,7,normal)]
+arah_permainan:kanan
+warna_aktif:merah
+status_UNI:_332

@@ -17,7 +17,7 @@
 :- include('lihatKartu.pl').
 :- include('saveloadGame.pl').
 
-% Kode StartGame Telah disanitasi, kecuali input nama (memang belum bisa disanitasi)
+% Kode StartGame Telah disanitasi
 startGame:- retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),
 retractall(giliran(_)), retractall(discard_top(_)), retractall(kartu_tangan(_,_)), retractall(list_uni(_)),retractall(arah(_)), % reset semua dynamic
 inputJml(Jml),assertz(jml_pemain(Jml)),inputPemain(Jml,DaftarPemain), assertz(arah('kanan')), assertz(list_uni([])),% input pemain dan Jumlah Pemain
@@ -162,6 +162,7 @@ saveGame:-
     read(Input),
     insert_txt(Input,LoadFileName),
     insert_txt('asavegame',SaveFileName),
+    assertz(nama_file(Input)),
     open(SaveFileName,write,SaveGameFormat),
     open(LoadFileName,write,LoadGameFormat),
     format(SaveGameFormat,'urutan_pemain: ~w',[Urutan]),
@@ -193,5 +194,34 @@ saveGame:-
     close(SaveGameFormat),
     close(LoadGameFormat).
     
+loadGame:-
 
-    
+    write('Masukkan nama file yang akan dimuat: '),
+    read(Input),
+    insert_txt(Input,Inputtxt),
+    (file_exists(Inputtxt)-> nl; write('Maaf Nama file yang anda masukkan tidak tersedia'),fail),
+    retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),
+    retractall(giliran(_)), retractall(discard_top(_)), retractall(kartu_tangan(_,_)), retractall(list_uni(_)),retractall(arah(_)),
+    insert_txt(Input,LoadFileName),
+    open(LoadFileName,read,LoadFileFormat),
+    read(LoadFileFormat,UrutanPemain),
+    read(LoadFileFormat,PemainNow),
+    assertz(giliran(PemainNow)),
+    get_idx(UrutanPemain,PemainNow,Idx),
+    assertz(urutan_pemain(UrutanPemain,Idx)),
+    read(LoadFileFormat,Warna),
+    read(LoadFileFormat,Jenis),
+    Element = kartu(Warna,Jenis,normal),
+    assertz(discard_top(Element)),
+    panjang(0,Pjg,UrutanPemain),
+    loadkartu(Pjg,UrutanPemain,LoadFileFormat),
+    read(LoadFileFormat,ArahPermainan),
+    assertz(arah(ArahPermainan)),
+    read(LoadFileFormat,ListUni),
+    assertz(list_uni(ListUni)),
+    format('Status permainan berhasil dimuat dari ~w.txt.',[Input]),nl,
+    format('Melanjutkan Giliran ~w.',[PemainNow]),close(LoadFileFormat).
+
+% exits sementara
+exita:-  retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),
+    retractall(giliran(_)), retractall(discard_top(_)), retractall(kartu_tangan(_,_)), retractall(list_uni(_)),retractall(arah(_)).

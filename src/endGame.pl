@@ -49,8 +49,8 @@ lebih_baik(Pemain1, Pemain2) :-
     total_poin_pemain(Pemain1, Poin1),
     total_poin_pemain(Pemain2, Poin2),
     (Poin1 < Poin2 -> true ; Poin1 > Poin2 -> fail ;
-        kartu_tangan(Pemain1, Kartu1), length(Kartu1, L1),
-        kartu_tangan(Pemain2, Kartu2), length(Kartu2, L2),
+        kartu_tangan(Pemain1, Kartu1), panjang(0,Kartu1, L1),
+        kartu_tangan(Pemain2, Kartu2), panjang(0,Kartu2, L2),
         (L1 < L2 -> true ; L1 > L2 -> fail ;
             urutan_pemain(DaftarUrutan),
             nth1(Idx1, DaftarUrutan, Pemain1),

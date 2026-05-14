@@ -136,7 +136,7 @@ mainkanKartu(NomorUrut) :-
         fail
     ).
 
-    % 
+ 
 % Rule utama endGame
 endGame :-
     giliran(Pemenang),
@@ -144,10 +144,10 @@ endGame :-
     write('Berikut perhitungan poin sisa kartu:'), nl,
     urutan_pemain(DaftarPemain,_),
     tampilkan_perhitungan(DaftarPemain), nl,
-    predsort(bandingkan_pemain, DaftarPemain, SortedL),
+    predsort(bandingkan_pemain, DaftarPemain, SortedList),
     write('Urutan pemenang:'), nl,
-    tampilkan_peringkat(SortedL, 1),
-    nth1(1, SortedL, Juara1),
+    tampilkan_peringkat(SortedList, 1),
+    nth1(1, SortedList, Juara1),
     format('~nSelamat, ~w menjadi pemenang!~n', [Juara1]),
     retractall(game_started).
 

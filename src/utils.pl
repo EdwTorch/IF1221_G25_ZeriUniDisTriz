@@ -12,6 +12,7 @@ get_idx([],_,-1).
 get_idx([Head|Tail],Element,Idx):-
 get_idxhelp([Head|Tail],Element,0,Idx).
 
+get_idxhelp([],_,_,-1):-!.
 get_idxhelp([Element|_],Element,Idx,Idx):-!.
 get_idxhelp([Head|Tail],Element,Idxsaatini,Idx):-
 Head\==Element, Nextidx is Idxsaatini+1, get_idxhelp(Tail,Element,Nextidx,Idx).

@@ -58,7 +58,7 @@ lebih_baik(Pemain1, Pemain2) :-
             Idx1 < Idx2)).
 
 % Rule utama endGame
-endGame :-
+/* endGame :-
     giliran(Pemenang),
     format('Permainan selesai! ~w menghabiskan semua kartunya!~n~n', [Pemenang]),
     write('Berikut perhitungan poin sisa kartu:'), nl,
@@ -69,7 +69,7 @@ endGame :-
     tampilkan_peringkat(SortedList, 1),
     nth1(1, SortedList, Juara1),
     format('~nSelamat, ~w menjadi pemenang!~n', [Juara1]),
-    retractall(game_started).
+    retractall(game_started). */
 
 % Helper menampilkan
 tampilkan_perhitungan([]).

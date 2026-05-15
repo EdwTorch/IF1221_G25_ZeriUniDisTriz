@@ -27,7 +27,9 @@ efek_aksi(_) :- !.
 % Helper nambah kartu (plus 2, plus 4, plus 6)
 tambah_kartu(_,0) :- !.
 tambah_kartu(Pemain, Tambahan) :-
-    random_ambilkartu(Element),
+    random_ambilkartu(Element),ekstrak_kartu(Element,Warna,Jenis), urutan_pemain(ListNama,Idx), 
+    get_idx(ListNama,Nama,Idx),jml_pemain(Jml), 
+    format('~w mendapatkan kartu: ~w-~w',[Nama,Warna,Jenis]),nl,nl,
     kartu_tangan(Pemain, ListLama),
     insert_tail(ListLama, Element, ListBaru),
     retract(kartu_tangan(Pemain,_)),

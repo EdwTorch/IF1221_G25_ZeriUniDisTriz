@@ -56,6 +56,7 @@ ambilKartu :-
     retract(efek('plus_dua')),
     next_giliran(Idx, NewestIdx, Jml),
     get_idx(ListNama, NextNama, NewestIdx),
+    format('Giliran ~w',[NextNama]),nl,
     retractall(giliran(_)), assertz(giliran(NextNama)),
     retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)).
 
@@ -148,8 +149,6 @@ mainkanKartu(NomorUrut) :-
         assertz(urutan_pemain(ListNama, NewestIdx)),
 
         nl, write('--- Giliran Selesai ---'), nl,                          % ganti giliran
-        % next_giliran(Idx,NewestIdx,Jml),
-        % get_idx(ListNama,NextNama,NewestIdx),
         format('Giliran ~w',[NextNama]),nl,
         retractall(urutan_pemain(_,_)), retractall(giliran(_)),assertz(giliran(NextNama)),
         assertz(urutan_pemain(ListNama,NewestIdx)),

@@ -10,7 +10,7 @@ ambil_kartu_ke(N, [_|Tail], Kartu) :-
 % cek validitas kartu 
 cek_validitas(kartu(Warna, _, _), kartu(Warna, _, _)) :- !.    % --> valid jika warnanya sama
 cek_validitas(kartu(_, Jenis, _), kartu(_, Jenis, _)) :- !.    % --> valid jika jenis atau angkanya sama
-cek_validitas(kartu(hitam, _, _), _) :- !.                     % --> valid jika kartu yang dimainkan adalah kartu hitam
+cek_validitas(kartu('hitam', _, _), _) :- !.                     % --> valid jika kartu yang dimainkan adalah kartu hitam
 
 
 % FUNGSI MAINKAN KARTU 

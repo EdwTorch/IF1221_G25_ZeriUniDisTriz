@@ -42,5 +42,6 @@ random_select_tanpadel(List, 1,Element) :-
 % mengambil head suatu list
 get_head([Head|_],Head).
 
-
-
+% Mengecek list atau bukan
+cek_list([]).
+cek_list([_|_]).

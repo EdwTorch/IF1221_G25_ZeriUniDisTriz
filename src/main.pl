@@ -1,7 +1,7 @@
 :- dynamic(giliran/1).           % Menunjukan giliran siapa sekarang -> giliran(Pemain)
 :- dynamic(kartu_tangan/2).      % Menunjukan kartu yang ada di tangan pemain -> kartu_tangan(Pemain, ListKartu)
 :- dynamic(discard_top/1).       % Menunjukan kartu paling atas di menja -> discard_top(kartu(Warna, Jenis, normal/hide))
-:- dynamic(efek/1).              % Menunjukan efek yang berlaku saat ini (skip, reverse, etc), note: belum diimplementasiin (masih placeholder)
+:- dynamic(efek/1).              % Menunjukan efek yang berlaku saat ini (plus 2, reverse, etc).
 :- dynamic(jml_pemain/1). % menyimpan jumlah pemain saat ini
 :- dynamic(urutan_pemain/2). % urutan_pemain(ListUrutan,IdxSaatini)
 :- dynamic(game_started/0). % Menunjukkan state apakah game sudah dimulai.
@@ -16,6 +16,7 @@
 :- include('mainkanKartu.pl').
 :- include('lihatKartu.pl').
 :- include('saveloadGame.pl').
+:- include('kartuaksi.pl').
 
 % Kode StartGame Telah disanitasi
 startGame:- retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),
@@ -45,6 +46,18 @@ Ngambil Kartu Secara Random (Lihat Rule nya di utils.pl), Lalu Ekstrak Warna dan
 Baca Urutan Pemainnya, Informasikan Dia Dapat Kartu Apa, Tambah Ke List decknya (Belum Implement),
 Setelah Itu Update Urutan Giliran dan Idx Urutan Pemain.
 */
+% Ambil kartu untuk plus 2
+ambilKartu :-
+    efek('plus_dua'), !,
+    giliran(Pemain),
+    urutan_pemain(ListNama, Idx),
+    jml_pemain(Jml),
+    tambah_kartu(Pemain, 2),
+    retract(efek('plus_dua')),
+    next_giliran(Idx, NewestIdx, Jml),
+    get_idx(ListNama, NextNama, NewestIdx),
+    retractall(giliran(_)), assertz(giliran(NextNama)),
+    retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)).
 
 ambilKartu:-
 random_ambilkartu(Element),ekstrak_kartu(Element,Warna,Jenis), urutan_pemain(ListNama,Idx), 
@@ -75,10 +88,10 @@ lihatCommand :-
     giliran(Pemain),
     kartu_tangan(Pemain, ListKartu),
     write('Aksi utama yang tersedia:'), nl,
-    (JenisNow == draw_four ->
+    (JenisNow == 'plus_empat' ->
         write('1. ambilKartu'), nl,
         write('2. tantang'), nl
-        ; JenisNow == draw_two ->
+        ; JenisNow == 'plus_dua' ->
             write('1. ambilKartu'), nl
         ; (valid_play(ListKartu, WarnaNow, JenisNow) ->
             write('1. mainkanKartu()'), nl,
@@ -107,7 +120,7 @@ mainkanKartu(NomorUrut) :-
     ->  true
     ;   write('Nomor urut tidak valid! Membatalkan aksi.'), nl, fail
     ),
-    discard_top(KartuAtas),             %cek kartu teratas
+    discard_top(KartuAtas),             % cek kartu teratas
 
 
     % Validasi kartu dimainkan
@@ -122,9 +135,21 @@ mainkanKartu(NomorUrut) :-
         assertz(kartu_tangan(Pemain, ListBaru)),
         retract(discard_top(KartuAtas)),                                   % update discard_top
         assertz(discard_top(kartu(Warna, Jenis, normal))),
+
+        efek_aksi(Jenis),
+        (Jenis == 'skip' ->             % aksi skip
+        urutan_pemain(_, NewestIdx),
+        get_idx(ListNama, NextNama, NewestIdx)
+        ; next_giliran(Idx, NewestIdx, Jml),        % urutan normal
+        get_idx(ListNama, NextNama, NewestIdx)),
+        retractall(giliran(_)),
+        assertz(giliran(NextNama)),
+        retractall(urutan_pemain(_,_)),
+        assertz(urutan_pemain(ListNama, NewestIdx)),
+
         nl, write('--- Giliran Selesai ---'), nl,                          % ganti giliran
-        next_giliran(Idx,NewestIdx,Jml),
-        get_idx(ListNama,NextNama,NewestIdx),
+        % next_giliran(Idx,NewestIdx,Jml),
+        % get_idx(ListNama,NextNama,NewestIdx),
         format('Giliran ~w',[NextNama]),nl,
         retractall(urutan_pemain(_,_)), retractall(giliran(_)),assertz(giliran(NextNama)),
         assertz(urutan_pemain(ListNama,NewestIdx)),

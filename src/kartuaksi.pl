@@ -29,12 +29,14 @@ efek_aksi('reverse') :-
     ; assertz(arah('kanan'))), !.
 
 % wild
-efek_aksi('wild') :-
+efek_aksi('wildcard') :-
+    nl,
     write('Pilih warna: '), nl,
     write('1. Merah'), nl,
     write('2. Kuning'), nl,
     write('3. Hijau'), nl,
     write('4. Biru'), nl,
+    write('Pilihan anda: '), nl,
     read(WarnaPilihan),
     warna_pilihan(WarnaPilihan, Warna),
     
@@ -50,8 +52,7 @@ efek_aksi('plus_empat') :-
     
     retractall(yg_keluarin_plus4(_)),
     assertz(yg_keluarin_plus4(PemainSekarang)),
-    
-    efek_aksi('wild'),
+    efek_aksi('wildcard'),
     assertz(efek('plus_empat')), !.
     
 efek_aksi(_) :- !.

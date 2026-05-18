@@ -8,6 +8,7 @@
 :- dynamic(arah/1).             % arah kemana default ke kanan.
 :- dynamic(list_uni/1).         % list orang yang pernah ngomon UNIIIIIIIIII
 :- dynamic(warna_sebelumnya/1). % Menyimpan warna di meja sesaat SEBELUM diganti oleh kartu plus 4
+:- dynamic(jenis_sebelumnya/1). % Menyimpan jenis di meja sesaat SEBELUM diganti oleh kartu plus 4
 :- dynamic(yg_keluarin_plus4/1).    % Menyimpan nama pemain yang mengeluarkan kartu plus 4
 :- dynamic(warna_wild/1).       % Menyimpan warna aktif yang dipilih pemain setelah mengeluarkan kartu wild atau plus 4
 
@@ -140,6 +141,13 @@ lihatCommand :-
         write('2. tantang'), nl
         ; JenisNow == 'plus_dua', efek('plus_dua') ->
             write('1. ambilKartu'), nl
+        ; (JenisNow == 'plus_empat' ; JenisNow == 'wildcard') ->
+            warna_wild(WarnaAktif),
+            (valid_play(ListKartu, WarnaAktif, JenisNow) ->
+                write('1. mainkanKartu()'), nl,
+                write('2. ambilKartu'), nl
+            ;   write('1. ambilKartu'), nl
+            )
         ; (valid_play(ListKartu, WarnaNow, JenisNow) ->
             write('1. mainkanKartu()'), nl,
             write('2. ambilKartu'), nl
@@ -176,17 +184,22 @@ mainkanKartu(NomorUrut) :-
     ->  
         % jika valid
         KartuPilihan = kartu(Warna, Jenis, _),                             % warna jenis ditampilkan 
-       (Jenis == 'plus_empat' ->
-            ekstrak_kartu(KartuAtas, WarnaMeja, _),
+        discard_top(kartu(WarnaMeja, JenisMeja, _)),
+        (Jenis == 'plus_empat' ->
+            KartuMeja = kartu(WarnaMeja, JenisMeja, _),
             retractall(warna_sebelumnya(_)),
-            assertz(warna_sebelumnya(WarnaMeja)) ; true),
+            assertz(warna_sebelumnya(WarnaMeja)),
+            retractall(jenis_sebelumnya(_)),
+            assertz(jenis_sebelumnya(JenisMeja)),
+            retractall(yg_keluarin_plus4(_)),
+            assertz(yg_keluarin_plus4(Pemain))
+        ;   true
+        ),
         format('~w memainkan kartu: ~w-~w~n', [Pemain, Warna, Jenis]), 
         IndexHapus is NomorUrut - 1,                                       % hapus kartu di tangan                   
         del(ListKartu, IndexHapus, ListBaru),                              % update kartu_tangan
-        retract(kartu_tangan(Pemain, ListKartu)),
+        retract(kartu_tangan(Pemain, _)),
         assertz(kartu_tangan(Pemain, ListBaru)),
-        retract(discard_top(KartuAtas)),                                   % update discard_top
-        assertz(discard_top(kartu(Warna, Jenis, normal))),
 
         efek_aksi(Jenis),
         ((Jenis == 'skip'; Jenis == 'plus_dua')->             % aksi skip

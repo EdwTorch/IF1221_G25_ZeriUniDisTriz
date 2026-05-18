@@ -1,6 +1,7 @@
-% cek punya warnanya gak si tersangka
-cek_warna([kartu(Warna, _, _)|_], WarnaLama) :- Warna == WarnaLama, !.
-cek_warna([_|Sisa], WarnaLama) :- cek_warna(Sisa, WarnaLama).
+% cek punya yg cocok gak si tersangka
+cek_kecocokkan([kartu(Warna, _, _)|_], WarnaMeja, _) :- Warna == WarnaMeja, !.
+cek_kecocokkan([kartu(_, Jenis, _)|_], _, JenisMeja) :- Jenis == JenisMeja, !.
+cek_kecocokkan([_|Sisa], WarnaMeja, JenisMeja) :- cek_kecocokkan(Sisa, WarnaMeja, JenisMeja).
 
 tantang :-
     efek('plus_empat'),
@@ -12,11 +13,12 @@ tantang :-
     write('Memeriksa kartu '), write(Tersangka), write('...'), nl,
 
     warna_sebelumnya(WarnaLama),
+    jenis_sebelumnya(JenisLama),
 
     kartu_tangan(Tersangka, ListKartu),
-    (cek_warna(ListKartu, WarnaLama) ->
+    (cek_kecocokkan(ListKartu, WarnaLama, JenisLama) ->
         write('Tantangan berhasil!'),nl,
-        format('Pemain ~w memiliki kartu dengan warna ~w.', [Tersangka, WarnaLama]), nl,
+        format('Pemain ~w memiliki kartu yang cocok.', [Tersangka]), nl,
         format('Pemain ~w harus mengambil 4 kartu.', [Tersangka]), nl,
         
         tambah_kartu(Tersangka, 4),
@@ -24,7 +26,7 @@ tantang :-
         format('Sekarang giliran ~w.', [Penantang]), nl ;
     
         write('Tantangan gagal!'), nl,
-        format('~w tidak memiliki kartu yang cocok dengan warna ~w.', [Tersangka, WarnaLama]), nl,
+        format('~w tidak memiliki kartu yang cocok.', [Tersangka]), nl,
         format('~w mendapatkan 6 kartu acak.', [Penantang]), nl,
         
         tambah_kartu(Penantang, 6),

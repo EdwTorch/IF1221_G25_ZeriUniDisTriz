@@ -213,15 +213,12 @@ endGame :-
     giliran(Pemenang),
     format('Permainan selesai! ~w menghabiskan semua kartunya!~n~n', [Pemenang]),
     write('Berikut perhitungan poin sisa kartu:'), nl,
-    
-    urutan_pemain(DaftarPemain,_),
+    urutan_pemain(DaftarPemain),
     tampilkan_perhitungan(DaftarPemain), nl,
-    predsort(bandingkan_pemain, DaftarPemain, SortedList),
-    
+    sort_pemain(DaftarPemain, SortedList),
     write('Urutan pemenang:'), nl,
     tampilkan_peringkat(SortedList, 1),
-    
-    nth1(1, SortedList, Juara1),
+    get_head(SortedList, Juara1),
     format('~nSelamat, ~w menjadi pemenang!~n', [Juara1]),
     retractall(game_started).
 

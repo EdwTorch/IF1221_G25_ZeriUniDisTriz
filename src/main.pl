@@ -172,10 +172,10 @@ mainkanKartu(NomorUrut) :-
     ->  
         % jika valid
         KartuPilihan = kartu(Warna, Jenis, _),                             % warna jenis ditampilkan 
-        (Jenis == 'plus_empat' ->
+       (Jenis == 'plus_empat' ->
             ekstrak_kartu(KartuAtas, WarnaMeja, _),
             retractall(warna_sebelumnya(_)),
-            assertz(warna_sebelumnya(WarnaMeja))),
+            assertz(warna_sebelumnya(WarnaMeja)) ; true),
         format('~w memainkan kartu: ~w-~w~n', [Pemain, Warna, Jenis]), 
         IndexHapus is NomorUrut - 1,                                       % hapus kartu di tangan                   
         del(ListKartu, IndexHapus, ListBaru),                              % update kartu_tangan
@@ -197,8 +197,7 @@ mainkanKartu(NomorUrut) :-
 
         nl, write('--- Giliran Selesai ---'), nl,                          % ganti giliran
         format('Giliran ~w',[NextNama]),nl,
-        retractall(urutan_pemain(_,_)), retractall(giliran(_)),assertz(giliran(NextNama)),
-        assertz(urutan_pemain(ListNama,NewestIdx)),
+        
         write('(Catatan: Fungsi pindah giliran akan diintegrasikan nanti)'), nl
         
     ;   

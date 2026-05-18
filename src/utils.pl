@@ -45,3 +45,11 @@ get_head([Head|_],Head).
 % Mengecek list atau bukan
 cek_list([]).
 cek_list([_|_]).
+
+readformat(Stream,Value):-     
+        read_term(Stream,Term,[]),
+        Term = (_:Value),!.
+
+readformatdiscardtop(Stream,Warna,Angka):-
+        read_term(Stream,Term,[]),
+        Term = (_:Value), Value = (Warna-Angka),!.

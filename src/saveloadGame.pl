@@ -1,11 +1,21 @@
-print_kartu_sisa([],_,_):-!.
-print_kartu_sisa([HeadUrutan|TailUrutan],LoadGameFormat,SaveGameFormat):-
+print_kartu_sisa([],_).
+print_kartu_sisa([HeadUrutan|TailUrutan],LoadGameFormat):-
     kartu_tangan(HeadUrutan,KartuHead),
-    format(SaveGameFormat,'Kartu_~w:~w',[HeadUrutan,KartuHead]),
-    nl(SaveGameFormat),
-    format(LoadGameFormat,'~w.',[KartuHead]),
+    print_formated_kartu(KartuHead, ListKartuFormated),
+    format(LoadGameFormat,'kartu(~q):~w.',[HeadUrutan,ListKartuFormated]),
     nl(LoadGameFormat),
-    print_kartu_sisa(TailUrutan,LoadGameFormat,SaveGameFormat).
+    print_kartu_sisa(TailUrutan,LoadGameFormat).
+
+print_formated_kartu(ListKartu,Hasil) :-
+print_formated_kartu_helper(ListKartu,Hasil,[]).
+
+print_formated_kartu_helper([],Hasil,Hasil):-!.
+print_formated_kartu_helper([HeadKartu|TailKartu],Hasil,ListSementara):-
+    ekstrak_kartu(HeadKartu,Warna,Jenis),
+    X = Warna-Jenis,
+    insert_tail(ListSementara,X,ListBaru),
+    print_formated_kartu_helper(TailKartu,Hasil,ListBaru).
+
 
 insert_txt(Nama,Hasil):-
     name(Nama,ListAscii),
@@ -21,10 +31,23 @@ loadkartuhelper(0,Jml,[HeadPemain|TailPemain],LoadFileFormat),!.
 loadkartuhelper(_,_,[],_).
 loadkartuhelper(Idx,Jml,[HeadPemain|TailPemain],LoadFileFormat):-
     Idx <Jml,
-    read(LoadFileFormat,Kartu),
-    assertz(kartu_tangan(HeadPemain,Kartu)),
+    readformat(LoadFileFormat,ListKartu),
+    compound_formated_kartu(ListKartu,ListKartuBaru),
+    assertz(kartu_tangan(HeadPemain,ListKartuBaru)),
     NewIdx is Idx+1,
     loadkartuhelper(NewIdx,Jml,TailPemain,LoadFileFormat).
+
+compound_formated_kartu(ListKartu,FormatedListKartu):-
+compound_formated_kartu_helper(ListKartu,[],FormatedListKartu).
+
+compound_formated_kartu_helper([],FormatedListKartu,FormatedListKartu):- !.
+compound_formated_kartu_helper([HeadKartu|TailKartu],ListSementara,FormatedListKartu):-
+    HeadKartu = (Warna-Jenis), 
+    ekstrak_kartu(Element,Warna,Jenis),
+    insert_tail(ListSementara,Element,Listbaru),
+    compound_formated_kartu_helper(TailKartu,Listbaru,FormatedListKartu).
+
+
 
 /* LoadGame (kita input sendiri ga liat dari directory)
 loadGame:-

@@ -114,13 +114,15 @@ ambilKartu:-
 % Pengambilan Kartu belum dimasukkan ke dalam list kartu milik Pemain tersebut, dan belum bisa ganti giliran
 
 cekInfo :-
-    discard_top(kartu(WarnaTeratas, JenisTeratas, _)),
+    discard_top(kartu(WarnaTeratas, JenisTeratas, _)), 
+    % arah(ArahPermainan),
     
     write('Kartu discard top: '), write(WarnaTeratas), write('-'), write(JenisTeratas), nl,
     
     urutan_pemain(DaftarPemain,_),
     
     write('Urutan pemain: '), print_list_pemain(DaftarPemain), nl,
+    %  write('Arah Permainan: '), write(Arah),nl, 
     write('Informasi pemain: '), nl,
     
     print_info_pemain(DaftarPemain), !.
@@ -237,19 +239,28 @@ saveGame:-
     open(LoadFileName,write,LoadGameFormat),
     format(LoadGameFormat,'urutan_pemain: ~q.',[Urutan]),
     nl(LoadGameFormat),
+    
     format(LoadGameFormat,'giliran:~q.',[Nama]),
     nl(LoadGameFormat),
-    format(LoadGameFormat,'discard_top:~q-~q.',[Warna,Jenis]),
+    
+    format(LoadGameFormat,'discard_top:~w-~w.',[Warna,Jenis]),
     nl(LoadGameFormat),
+    
+    format(LoadGameFormat,'warna_aktif:~w.',[Warna]),
+    nl(LoadGameFormat),
+    
     format(LoadGameFormat,'arah_permainan:~q.',[ArahPermainan]),
     nl(LoadGameFormat),
-    format(LoadGameFormat,'warna_aktif:~q.',[Warna]),
+    
+    (ListUni == []->format(LoadGameFormat,'status_UNI:~q.',[[]]);
+    format(LoadGameFormat,'status_UNI:~q.',[ListUni])),
     nl(LoadGameFormat),
-    format(LoadGameFormat,'status_UNI:~q.',[ListUni]),
-    nl(LoadGameFormat),
+
+    print_kartu_sisa(Urutan,LoadGameFormat),
+
     format('Status permainan berhasil disimpan ke ~w.txt.',[Input]),
     
-    close(LoadGameFormat).
+    close(LoadGameFormat),!.
     
 loadGame:-
     directory_files('.',Files),
@@ -264,27 +275,33 @@ loadGame:-
     
     insert_txt(Input,LoadFileName),
     open(LoadFileName,read,LoadFileFormat),
-    read(LoadFileFormat,UrutanPemain),
-    read(LoadFileFormat,PemainNow),
+    readformat(LoadFileFormat,UrutanPemain),
+    readformat(LoadFileFormat,PemainNow),
     
     assertz(giliran(PemainNow)),
     get_idx(UrutanPemain,PemainNow,Idx),
     assertz(urutan_pemain(UrutanPemain,Idx)),
-    read(LoadFileFormat,Warna),
-    read(LoadFileFormat,Jenis),
-    
+
+    readformatdiscardtop(LoadFileFormat,Warna,Jenis), 
     Element = kartu(Warna,Jenis,normal),
     assertz(discard_top(Element)),
-    panjang(0,Pjg,UrutanPemain),
-    loadkartu(Pjg,UrutanPemain,LoadFileFormat),
     
-    read(LoadFileFormat,ArahPermainan),
+    readformat(LoadFileFormat,_), % warna aktif (g dipake)
+
+    readformat(LoadFileFormat,ArahPermainan),
     assertz(arah(ArahPermainan)),
-    read(LoadFileFormat,ListUni),
+    readformat(LoadFileFormat,ListUni),
     
     assertz(list_uni(ListUni)),
+    
+
+    panjang(0,Pjg,UrutanPemain),
+    assertz(jml_pemain(Pjg)),
+
+    loadkartu(Pjg,UrutanPemain,LoadFileFormat),
+    
     format('Status permainan berhasil dimuat dari ~w.txt.',[Input]),nl,
-    format('Melanjutkan Giliran ~w.',[PemainNow]),close(LoadFileFormat).
+    format('Melanjutkan Giliran ~w.',[PemainNow]),close(LoadFileFormat),!.
 
 % exits sementara
 exita:-  retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),

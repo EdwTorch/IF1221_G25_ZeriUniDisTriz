@@ -1,8 +1,9 @@
-['B','A'].
-'B'.
-merah.
-6.
-[kartu(merah,plus_dua,normal),kartu(hijau,6,normal),kartu(kuning,reverse,normal),kartu(hitam,wildcard,normal),kartu(merah,reverse,normal),kartu(biru,6,normal),kartu(kuning,0,normal)].
-[kartu(merah,4,normal),kartu(merah,2,normal),kartu(hitam,plus_empat,normal),kartu(merah,0,normal),kartu(merah,4,normal),kartu(hijau,7,normal),kartu(biru,7,normal)].
-kanan.
-_332.
+urutan_pemain: ['A','B','C'].
+giliran:'A'.
+discard_top:kuning-2.
+warna_aktif:kuning.
+arah_permainan:kanan.
+status_UNI:[].
+kartu('A'):[merah-9,hijau-reverse,kuning-2,biru-9,hijau-4,hijau-1,biru-7].
+kartu('B'):[biru-8,hitam-plus_empat,hijau-reverse,hitam-wildcard,biru-0,biru-skip,kuning-7].
+kartu('C'):[kuning-2,merah-reverse,hitam-wildcard,merah-4,merah-0,biru-plus_dua,hijau-5].

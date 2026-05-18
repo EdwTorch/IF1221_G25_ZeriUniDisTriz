@@ -60,7 +60,7 @@ Baca Urutan Pemainnya, Informasikan Dia Dapat Kartu Apa, Tambah Ke List decknya 
 Setelah Itu Update Urutan Giliran dan Idx Urutan Pemain.
 */
 % Ambil kartu untuk plus 2
-ambilKartu :-
+/* ambilKartu :-
     efek('plus_dua'), !,
     giliran(Pemain),
     urutan_pemain(ListNama, Idx),
@@ -74,7 +74,7 @@ ambilKartu :-
     
     format('Giliran ~w',[NextNama]),nl,
     retractall(giliran(_)), assertz(giliran(NextNama)),
-    retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)).
+    retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)). */
 
 % Ambil kartu untuk plus 4
 ambilKartu :-
@@ -189,11 +189,17 @@ mainkanKartu(NomorUrut) :-
         assertz(discard_top(kartu(Warna, Jenis, normal))),
 
         efek_aksi(Jenis),
-        (Jenis == 'skip' ->             % aksi skip
-        urutan_pemain(_, NewestIdx),
+        ((Jenis == 'skip'; Jenis == 'plus_dua')->             % aksi skip
+        urutan_pemain(_, NewIdx),
+        next_giliran(NewIdx,NewestIdx,Jml),
         get_idx(ListNama, NextNama, NewestIdx)
-        ; ((Jml =:= 2, Jenis =='reverse')-> efek_aksi('skip'), urutan_pemain(_, NewestIdx),
-        get_idx(ListNama, NextNama, NewestIdx);next_giliran(Idx, NewestIdx, Jml),        % urutan normal
+        ; (
+            (Jml =:= 2, Jenis =='reverse')-> efek_aksi('skip'), urutan_pemain(_, NewIdx), 
+        next_giliran(NewIdx,NewestIdx,Jml),get_idx(ListNama, NextNama, NewestIdx)
+        
+        ;
+        
+        next_giliran(Idx, NewestIdx, Jml),        % urutan normal
         get_idx(ListNama, NextNama, NewestIdx))),
 
 

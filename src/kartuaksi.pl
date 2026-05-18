@@ -4,19 +4,21 @@ efek_aksi('skip') :-
     jml_pemain(Jml),
     
     next_giliran(Idx, TargetIdx, Jml),
-    next_giliran(TargetIdx, NextIdx, Jml),
     
-    retract(urutan_pemain(_,_)),
-    assertz(urutan_pemain(List, NextIdx)),
-    
-    get_idx(List, NamaTarget, TargetIdx),
-    get_idx(List, NamaNext, NextIdx),
+    retractall(urutan_pemain(_,_)),
+    assertz(urutan_pemain(List, TargetIdx)),
     
     nl, write('Pemain berikutnya kehilangan giliran.'), nl, !.
 
 % plus 2
 efek_aksi('plus_dua') :-
-    assertz(efek('plus_dua')), !.
+    urutan_pemain(List, Idx),
+    jml_pemain(Jml),
+    next_giliran(Idx, TargetIdx, Jml),
+    get_idx(List, TargetPemain, TargetIdx),
+    tambah_kartu(TargetPemain, 2),
+    write('Pemain berikutnya mendapatkan 2 kartu dan kehilangan giliran.'), nl, 
+    retractall(urutan_pemain(_,_)),assertz(urutan_pemain(List,TargetIdx)),!.
 
 % reverse
 efek_aksi('reverse') :-
@@ -67,8 +69,7 @@ warna_pilihan('biru', 'biru') :- !.
 % Helper nambah kartu (plus 2, plus 4, plus 6)
 tambah_kartu(_,0) :- !.
 tambah_kartu(Pemain, Tambahan) :-
-    random_ambilkartu(Element),ekstrak_kartu(Element,Warna,Jenis), urutan_pemain(ListNama,Idx), 
-    get_idx(ListNama,Nama,Idx),jml_pemain(Jml), 
+    random_ambilkartu(Element),ekstrak_kartu(Element,Warna,Jenis),  
     
     format('~w mendapatkan kartu: ~w-~w',[Pemain,Warna,Jenis]),nl,nl,
     

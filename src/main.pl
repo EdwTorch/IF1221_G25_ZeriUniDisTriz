@@ -49,7 +49,7 @@ startGame:- retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall
     format('Kartu discard top: ~w-~w',[Warna,Angka]), 
     assertz(discard_top(Element)),
     nl,nl,
-    format('Giliran ~w',[Pemain1]).
+    format('Giliran ~w',[Pemain1]), !.
 
 /*
 Alur Ambil Kartu : 

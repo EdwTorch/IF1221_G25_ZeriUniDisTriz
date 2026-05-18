@@ -18,6 +18,7 @@ tantang :-
         write('Tantangan berhasil!'),nl,
         format('Pemain ~w memiliki kartu dengan warna ~w.', [Tersangka, WarnaLama]), nl,
         format('Pemain ~w harus mengambil 4 kartu.', [Tersangka]), nl,
+        
         tambah_kartu(Tersangka, 4),
         retract(efek('plus_empat')),
         format('Sekarang giliran ~w.', [Penantang]), nl ;
@@ -25,12 +26,16 @@ tantang :-
         write('Tantangan gagal!'), nl,
         format('~w tidak memiliki kartu yang cocok dengan warna ~w.', [Tersangka, WarnaLama]), nl,
         format('~w mendapatkan 6 kartu acak.', [Penantang]), nl,
+        
         tambah_kartu(Penantang, 6),
         retract(efek('plus_empat')),
+        
         urutan_pemain(ListPemain, IdxPenantang),
         jml_pemain(Jml),
+        
         next_giliran(IdxPenantang, IdxBaru, Jml),
         get_idx(ListPemain, PemainBaru, IdxBaru),
+        
         retractall(giliran(_)), assertz(giliran(PemainBaru)),
         retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListPemain, IdxBaru)),
         format('Giliran ~w.', [PemainBaru])), !.

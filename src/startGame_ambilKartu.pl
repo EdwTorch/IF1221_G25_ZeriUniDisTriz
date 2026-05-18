@@ -107,41 +107,54 @@ kartu('kuning','plus_dua',_).
 
 kartu('hitam','wildcard',_).
 kartu('hitam','plus_empat',_).
+
 warna_kartu_discardpile(['merah','kuning','hijau','biru']).
 warna_kartu_ambilkartu(['merah','kuning','hijau','biru','hitam']).
+
 jenis_kartu_discardpile([0,1,2,3,4,5,6,7,8,9]).
+
 jenis_kartu_ambilkartu_bukanwild([0,1,2,3,4,5,6,7,8,9,'plus_dua','reverse','skip']).
+
 jenis_kartu_wild(['plus_empat','wildcard']).
 
 random_discardpile(Element):- 
 warna_kartu_discardpile(ListWarna), jenis_kartu_discardpile(ListAngka),
-random_select_tanpadel(ListWarna,1,Warna), random_select_tanpadel(ListAngka,1,Angka),
-Element = kartu(Warna,Angka,_).
 
+random_select_tanpadel(ListWarna,1,Warna), random_select_tanpadel(ListAngka,1,Angka),
+
+Element = kartu(Warna,Angka,_),!.
+
+% Fungsi Ekstrak Kartu
 ekstrak_kartu(Element,Warna,Angka):-
 Element = kartu(Warna,Angka,_).
 
+% Fungsi untuk Mengambil kartu secara random
 random_ambilkartu(Element):-
 warna_kartu_ambilkartu(ListWarna), jenis_kartu_ambilkartu_bukanwild(ListJenis),
 jenis_kartu_wild(ListWild),
+
 random_select_tanpadel(ListWarna,1,Warna),
 (Warna == 'hitam' -> random_select_tanpadel(ListWild,1,Wild), Element = kartu(Warna,Wild,normal);
 random_select_tanpadel(ListJenis,1,Jenis), Element = kartu(Warna,Jenis,normal)).
 
+% Fungsi untuk mengambil 7 kartu secara acak
 ambilkan_kartu7(DaftarKartu):-
 ambil_kartu7help(DaftarKartu,[],7).
 
+% Helper ambil 7 kartu
 ambil_kartu7help(DaftarKartu,DaftarKartu,0).
 ambil_kartu7help(DaftarKartu,ListKartu,JmlKartuSisa):-
 NextJml is JmlKartuSisa -1, random_ambilkartu(Element),
 insert_tail(ListKartu,Element,Listbaru), ambil_kartu7help(DaftarKartu,Listbaru,NextJml).
 
 
-simpan_kartu([],_,_).
+% Helper simpan kartu
+simpan_kartu([],_,_):- !.
 simpan_kartu([HeadUrutan|TailUrutan],Urut,Jml):-
     ambilkan_kartu7(Daftarkartu), assertz(kartu_tangan(HeadUrutan,Daftarkartu)),!,
     simpan_kartu(TailUrutan,Urut,Jml).
 
+% nextgiliran
 next_giliran(Idx,NewestIdx,Jml):-
 arah(ArahSaatini),
 (ArahSaatini == 'kanan'-> (NewIdx is Idx +1, (NewIdx>=Jml -> NewestIdx is (NewIdx mod Jml) ;NewestIdx is NewIdx));

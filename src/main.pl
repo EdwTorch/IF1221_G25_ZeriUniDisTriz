@@ -25,25 +25,31 @@
 
 % Kode StartGame Telah disanitasi
 startGame:- retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),
-retractall(giliran(_)), retractall(discard_top(_)), retractall(kartu_tangan(_,_)), retractall(list_uni(_)),retractall(arah(_)),retractall(warna_sebelumnya(_)),retractall(yg_keluarin_plus4(_)),retractall(warna_wild(_)), % reset semua dynamic
-inputJml(Jml),assertz(jml_pemain(Jml)),inputPemain(Jml,DaftarPemain), assertz(arah('kanan')), assertz(list_uni([])),% input pemain dan Jumlah Pemain
-copy(DaftarPemain,ListPemain),     % Mengcopy Daftar Pemain ke ListPemain
-kocokurutan(ListPemain,Jml,[],UrutanPemain), % Mengocok Urutan Pemain ke dalam Variable UrutanPemain
-nl,nl,
-write('Setiap pemain mendapatkan 7 kartu acak'),
-simpan_kartu(UrutanPemain,UrutanPemain,Jml),
-nl,nl,
-get_head(UrutanPemain,Pemain1), % Ambil Pemain Pertama
-assertz(giliran(Pemain1)),
-assertz(game_started),
-get_idx(UrutanPemain,Pemain1,Idx),
-assertz(urutan_pemain(UrutanPemain,Idx)),
-random_discardpile(Element),                % Ambil Kartu Random Untuk Kartu Awal di Dek
-ekstrak_kartu(Element,Warna,Angka),         %  Mengambil Komponen Compound State
-format('Kartu discard top: ~w-~w',[Warna,Angka]), 
-assertz(discard_top(Element)),
-nl,nl,
-format('Giliran ~w',[Pemain1]).
+    retractall(giliran(_)), retractall(discard_top(_)), retractall(kartu_tangan(_,_)), retractall(list_uni(_)),retractall(arah(_)),retractall(warna_sebelumnya(_)),retractall(yg_keluarin_plus4(_)),retractall(warna_wild(_)), % reset semua dynamic
+    inputJml(Jml),assertz(jml_pemain(Jml)),inputPemain(Jml,DaftarPemain), assertz(arah('kanan')), assertz(list_uni([])),% input pemain dan Jumlah Pemain
+
+    copy(DaftarPemain,ListPemain),     % Mengcopy Daftar Pemain ke ListPemain
+    
+    kocokurutan(ListPemain,Jml,[],UrutanPemain), % Mengocok Urutan Pemain ke dalam Variable UrutanPemain
+    nl,nl,
+    write('Setiap pemain mendapatkan 7 kartu acak'),
+    simpan_kartu(UrutanPemain,UrutanPemain,Jml),
+    nl,nl,
+    
+    get_head(UrutanPemain,Pemain1), % Ambil Pemain Pertama
+    
+    assertz(giliran(Pemain1)),
+    assertz(game_started),
+    get_idx(UrutanPemain,Pemain1,Idx),
+    assertz(urutan_pemain(UrutanPemain,Idx)),
+    
+    random_discardpile(Element),                % Ambil Kartu Random Untuk Kartu Awal di Dek
+    ekstrak_kartu(Element,Warna,Angka),         %  Mengambil Komponen Compound State
+    
+    format('Kartu discard top: ~w-~w',[Warna,Angka]), 
+    assertz(discard_top(Element)),
+    nl,nl,
+    format('Giliran ~w',[Pemain1]).
 
 /*
 Alur Ambil Kartu : 
@@ -57,10 +63,13 @@ ambilKartu :-
     giliran(Pemain),
     urutan_pemain(ListNama, Idx),
     jml_pemain(Jml),
+
     tambah_kartu(Pemain, 2),
     retract(efek('plus_dua')),
+
     next_giliran(Idx, NewestIdx, Jml),
     get_idx(ListNama, NextNama, NewestIdx),
+    
     format('Giliran ~w',[NextNama]),nl,
     retractall(giliran(_)), assertz(giliran(NextNama)),
     retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)).
@@ -71,42 +80,56 @@ ambilKartu :-
     giliran(Pemain),
     urutan_pemain(ListNama, Idx),
     jml_pemain(Jml),
+
     tambah_kartu(Pemain, 4),
     retract(efek('plus_empat')),
+
     next_giliran(Idx, NewestIdx, Jml),
     get_idx(ListNama, NextNama, NewestIdx),
+
     format('Giliran ~w',[NextNama]),nl,
+    
     retractall(giliran(_)), assertz(giliran(NextNama)),
     retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)).
 
 ambilKartu:-
-random_ambilkartu(Element),ekstrak_kartu(Element,Warna,Jenis), urutan_pemain(ListNama,Idx), 
-get_idx(ListNama,Nama,Idx),jml_pemain(Jml), 
-format('~w mendapatkan kartu: ~w-~w',[Nama,Warna,Jenis]),nl,nl,
-kartu_tangan(Nama,KartuLama),
-insert_tail(KartuLama,Element,KartuBaru),
-retract(kartu_tangan(Nama,_)),
-assertz(kartu_tangan(Nama,KartuBaru)),
-next_giliran(Idx,NewestIdx,Jml),
-get_idx(ListNama,NextNama,NewestIdx),
-format('Giliran ~w',[NextNama]),nl,
-retractall(urutan_pemain(_,_)), retractall(giliran(_)),assertz(giliran(NextNama)),
-assertz(urutan_pemain(ListNama,NewestIdx)). 
+    random_ambilkartu(Element),ekstrak_kartu(Element,Warna,Jenis), urutan_pemain(ListNama,Idx), 
+    get_idx(ListNama,Nama,Idx),jml_pemain(Jml), 
+    
+    format('~w mendapatkan kartu: ~w-~w',[Nama,Warna,Jenis]),nl,nl,
+    
+    kartu_tangan(Nama,KartuLama),
+    insert_tail(KartuLama,Element,KartuBaru),
+    retract(kartu_tangan(Nama,_)),
+    
+    assertz(kartu_tangan(Nama,KartuBaru)),
+    next_giliran(Idx,NewestIdx,Jml),
+    get_idx(ListNama,NextNama,NewestIdx),
+    
+    format('Giliran ~w',[NextNama]),nl,
+    
+    retractall(urutan_pemain(_,_)), retractall(giliran(_)),assertz(giliran(NextNama)),
+    assertz(urutan_pemain(ListNama,NewestIdx)). 
 
 % Pengambilan Kartu belum dimasukkan ke dalam list kartu milik Pemain tersebut, dan belum bisa ganti giliran
 
 cekInfo :-
     discard_top(kartu(WarnaTeratas, JenisTeratas, _)),
+    
     write('Kartu discard top: '), write(WarnaTeratas), write('-'), write(JenisTeratas), nl,
+    
     urutan_pemain(DaftarPemain,_),
+    
     write('Urutan pemain: '), print_list_pemain(DaftarPemain), nl,
     write('Informasi pemain: '), nl,
+    
     print_info_pemain(DaftarPemain), !.
 
 lihatCommand :-
     discard_top(kartu(WarnaNow, JenisNow, _)),
     giliran(Pemain),
     kartu_tangan(Pemain, ListKartu),
+    
     write('Aksi utama yang tersedia:'), nl,
     (JenisNow == 'plus_empat', efek('plus_empat') ->
         write('1. ambilKartu'), nl,
@@ -118,6 +141,7 @@ lihatCommand :-
             write('2. ambilKartu'), nl
         ; write('1. ambilKartu'), nl)),
     nl,
+    
     write('Aksi pendukung yang tersedia:'), nl,
     write('1. lihatCommand'), nl,
     write('2. lihatKartu'), nl,
@@ -189,11 +213,14 @@ endGame :-
     giliran(Pemenang),
     format('Permainan selesai! ~w menghabiskan semua kartunya!~n~n', [Pemenang]),
     write('Berikut perhitungan poin sisa kartu:'), nl,
+    
     urutan_pemain(DaftarPemain,_),
     tampilkan_perhitungan(DaftarPemain), nl,
     predsort(bandingkan_pemain, DaftarPemain, SortedList),
+    
     write('Urutan pemenang:'), nl,
     tampilkan_peringkat(SortedList, 1),
+    
     nth1(1, SortedList, Juara1),
     format('~nSelamat, ~w menjadi pemenang!~n', [Juara1]),
     retractall(game_started).
@@ -205,66 +232,60 @@ saveGame:-
     arah(ArahPermainan),
     discard_top(KartuAtas),
     ekstrak_kartu(KartuAtas,Warna,Jenis),
+
     write('Masukkan nama file penyimpanan: '),
     read(Input),
     insert_txt(Input,LoadFileName),
-    insert_txt('asavegame',SaveFileName),
     assertz(nama_file(Input)),
-    open(SaveFileName,write,SaveGameFormat),
+    
     open(LoadFileName,write,LoadGameFormat),
-    format(SaveGameFormat,'urutan_pemain: ~w',[Urutan]),
-    nl(SaveGameFormat),
-    format(LoadGameFormat,'~q.',[Urutan]),
+    format(LoadGameFormat,'urutan_pemain: ~q.',[Urutan]),
     nl(LoadGameFormat),
-    format(SaveGameFormat,'giliran:~w',[Nama]),
-    nl(SaveGameFormat),
-    format(LoadGameFormat,'~q.',[Nama]),
+    format(LoadGameFormat,'giliran:~q.',[Nama]),
     nl(LoadGameFormat),
-    format(SaveGameFormat,'discard_top:~w-~w',[Warna,Jenis]),
-    nl(SaveGameFormat),
-    format(LoadGameFormat,'~w.',[Warna]),
+    format(LoadGameFormat,'discard_top:~q-~q.',[Warna,Jenis]),
     nl(LoadGameFormat),
-    format(LoadGameFormat,'~w.',[Jenis]),
+    format(LoadGameFormat,'arah_permainan:~q.',[ArahPermainan]),
     nl(LoadGameFormat),
-    print_kartu_sisa(Urutan,LoadGameFormat,SaveGameFormat),
-    format(SaveGameFormat,'arah_permainan:~w',[ArahPermainan]),
-    nl(SaveGameFormat),
-    format(LoadGameFormat,'~w.',[ArahPermainan]),
+    format(LoadGameFormat,'warna_aktif:~q.',[Warna]),
     nl(LoadGameFormat),
-    format(SaveGameFormat,'warna_aktif:~w',[Warna]),
-    nl(SaveGameFormat),
-    format(SaveGameFormat,'status_UNI:~q',[ListUni]),
-    nl(SaveGameFormat),
-    format(LoadGameFormat,'~q.',[ListUni]),
+    format(LoadGameFormat,'status_UNI:~q.',[ListUni]),
     nl(LoadGameFormat),
     format('Status permainan berhasil disimpan ke ~w.txt.',[Input]),
-    close(SaveGameFormat),
+    
     close(LoadGameFormat).
     
 loadGame:-
-
+    directory_files('.',Files),
     write('Masukkan nama file yang akan dimuat: '),
     read(Input),
     insert_txt(Input,Inputtxt),
-    (file_exists(Inputtxt)-> nl; write('Maaf Nama file yang anda masukkan tidak tersedia'),fail),
+    get_idx(Files,Inputtxt,Index),
+    ((Index =\= -1) -> nl; write('Maaf Nama file yang anda masukkan tidak tersedia'),fail),
+
     retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),
     retractall(giliran(_)), retractall(discard_top(_)), retractall(kartu_tangan(_,_)), retractall(list_uni(_)),retractall(arah(_)),
+    
     insert_txt(Input,LoadFileName),
     open(LoadFileName,read,LoadFileFormat),
     read(LoadFileFormat,UrutanPemain),
     read(LoadFileFormat,PemainNow),
+    
     assertz(giliran(PemainNow)),
     get_idx(UrutanPemain,PemainNow,Idx),
     assertz(urutan_pemain(UrutanPemain,Idx)),
     read(LoadFileFormat,Warna),
     read(LoadFileFormat,Jenis),
+    
     Element = kartu(Warna,Jenis,normal),
     assertz(discard_top(Element)),
     panjang(0,Pjg,UrutanPemain),
     loadkartu(Pjg,UrutanPemain,LoadFileFormat),
+    
     read(LoadFileFormat,ArahPermainan),
     assertz(arah(ArahPermainan)),
     read(LoadFileFormat,ListUni),
+    
     assertz(list_uni(ListUni)),
     format('Status permainan berhasil dimuat dari ~w.txt.',[Input]),nl,
     format('Melanjutkan Giliran ~w.',[PemainNow]),close(LoadFileFormat).

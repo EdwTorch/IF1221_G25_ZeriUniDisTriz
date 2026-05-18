@@ -25,7 +25,9 @@
 
 % Kode StartGame Telah disanitasi
 startGame:- retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),
-    retractall(giliran(_)), retractall(discard_top(_)), retractall(kartu_tangan(_,_)), retractall(list_uni(_)),retractall(arah(_)),retractall(warna_sebelumnya(_)),retractall(yg_keluarin_plus4(_)),retractall(warna_wild(_)), % reset semua dynamic
+    retractall(giliran(_)), retractall(discard_top(_)), retractall(kartu_tangan(_,_)), retractall(list_uni(_)),retractall(arah(_)),
+    retractall(warna_sebelumnya(_)),retractall(yg_keluarin_plus4(_)),retractall(warna_wild(_)), % reset semua dynamic
+    
     inputJml(Jml),assertz(jml_pemain(Jml)),inputPemain(Jml,DaftarPemain), assertz(arah('kanan')), assertz(list_uni([])),% input pemain dan Jumlah Pemain
 
     copy(DaftarPemain,ListPemain),     % Mengcopy Daftar Pemain ke ListPemain
@@ -190,19 +192,18 @@ mainkanKartu(NomorUrut) :-
         (Jenis == 'skip' ->             % aksi skip
         urutan_pemain(_, NewestIdx),
         get_idx(ListNama, NextNama, NewestIdx)
-        ; next_giliran(Idx, NewestIdx, Jml),        % urutan normal
-        get_idx(ListNama, NextNama, NewestIdx)),
+        ; ((Jml =:= 2, Jenis =='reverse')-> efek_aksi('skip'), urutan_pemain(_, NewestIdx),
+        get_idx(ListNama, NextNama, NewestIdx);next_giliran(Idx, NewestIdx, Jml),        % urutan normal
+        get_idx(ListNama, NextNama, NewestIdx))),
+
+
         retractall(giliran(_)),
         assertz(giliran(NextNama)),
         retractall(urutan_pemain(_,_)),
         assertz(urutan_pemain(ListNama, NewestIdx)),
 
         nl, write('--- Giliran Selesai ---'), nl,                          % ganti giliran
-        format('Giliran ~w',[NextNama]),nl,
-        
-        write('(Catatan: Fungsi pindah giliran akan diintegrasikan nanti)'), nl
-        
-    ;   
+        format('Giliran ~w',[NextNama]),nl;   
         % jika tidak valid
         write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl,
         fail

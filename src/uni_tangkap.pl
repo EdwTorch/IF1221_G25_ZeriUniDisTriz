@@ -2,72 +2,89 @@
 uni(NomorUrut) :-
     giliran(Pemain),
     kartu_tangan(Pemain, ListKartu),
-    length(ListKartu, JumlahKartu),     % cek kartu jumlahnya 2 atau engga
+
+    panjang(0, JumlahKartu, ListKartu),             
     (   JumlahKartu == 2
     ->  true
     ;   write('Syarat tidak terpenuhi! Kartu di tanganmu tidak berjumlah 2.'), nl, fail
     ),
 
-    urutan_pemain(ListNama, Idx),        % bagian main.pl   
+    urutan_pemain(ListNama, Idx),
     jml_pemain(Jml),
 
-    (   ambil_kartu_ke(NomorUrut, ListKartu, KartuPilihan)              % ambil kartu 
+    (   ambil_kartu_ke(NomorUrut, ListKartu, KartuPilihan)
     ->  true
     ;   write('Nomor urut tidak valid! Membatalkan aksi.'), nl, fail
     ),
     discard_top(KartuAtas),
 
-    (   cek_validitas(KartuPilihan, KartuAtas)          % validasi kartu
+    (   cek_validitas(KartuPilihan, KartuAtas)
     ->  
-        KartuPilihan = kartu(Warna, Jenis, _),          % jika valid
+        KartuPilihan = kartu(Warna, Jenis, _),
         format('~w teriak "UNI!" dan memainkan kartu: ~w-~w~n', [Pemain, Warna, Jenis]), 
         IndexHapus is NomorUrut - 1,
         del(ListKartu, IndexHapus, ListBaru),
         
-        retract(kartu_tangan(Pemain, ListKartu)),       % update kartu sama discard top
+        retract(kartu_tangan(Pemain, ListKartu)),
         assertz(kartu_tangan(Pemain, ListBaru)),
         retract(discard_top(KartuAtas)),
         assertz(discard_top(kartu(Warna, Jenis, normal))),
 
-        list_uni(ListAmanLama),
-        ListAmanBaru = [Pemain | ListAmanLama],     % update list aman
+        list_uni(ListAmanLama),                     % untuk catat pemain ke daftar aman uni 
+        ListAmanBaru = [Pemain | ListAmanLama],
         retract(list_uni(ListAmanLama)),
         assertz(list_uni(ListAmanBaru)),
 
-        nl, write('- Giliran Selesai -'), nl,       %ganti giliran
-        next_giliran(Idx, NewestIdx, Jml),
-        get_idx(ListNama, NextNama, NewestIdx),
-        format('Giliran ~w~n', [NextNama]),
-        retractall(urutan_pemain(_,_)), retractall(giliran(_)),
+        efek_aksi(Jenis),                       % untuk perpindahan giliran setelah berhasil lempar kartu
+        (Jenis == 'skip' ->             
+            urutan_pemain(_, NewestIdx),
+            get_idx(ListNama, NextNama, NewestIdx)
+        ;   next_giliran(Idx, NewestIdx, Jml),         
+            get_idx(ListNama, NextNama, NewestIdx)
+        ),
+        
+        retractall(giliran(_)),
         assertz(giliran(NextNama)),
-        assertz(urutan_pemain(ListNama, NewestIdx))  
+        retractall(urutan_pemain(_,_)),
+        assertz(urutan_pemain(ListNama, NewestIdx)),
+
+        nl, write('--- Giliran Selesai ---'), nl,                          
+        format('Giliran ~w~n',[NextNama])
+        
     ;   
-        write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl,      %jika tidak valid
+        write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl,
         fail
     ).
 
-
-% FUNGSI TANGKAP
+% FUNGSI TANGKAP 
 tangkap(NamaTarget) :-
-    kartu_tangan(NamaTarget, ListKartu),     % dari list uni
+    kartu_tangan(NamaTarget, ListKartu),
     list_uni(ListAman),
     
-    length(ListKartu, 1),           % cek syarat tangkap, yaitu kartu sisa 1 dan nama tidak ada di daftar aman
-    \+ member(NamaTarget, ListAman),
-    !, % biar ga pindah ke rule tangkap yang bawah jia dah terpenuhi
-
-    format('Target tertangkap basah! ~w lupa bilang UNI!~n', [NamaTarget]), % jika tertangkap
+    panjang(0, JumlahTarget, ListKartu),            % cek syarat penangkapan
+    JumlahTarget == 1,
+    get_idx(ListAman, NamaTarget, IdxAman),
+    IdxAman == -1, % Target tidak ada di daftar aman (lupa teriak UNI)
+    !, 
+    format('Target tertangkap basah! ~w lupa bilang UNI!~n', [NamaTarget]),
     write('Hukuman: Tambah 2 kartu ke tangan.'), nl,
     
-    random_ambilkartu(Kartu1),      % hukuman
+    random_ambilkartu(Kartu1),
     random_ambilkartu(Kartu2),
-
-    insert_tail(ListKartu, Kartu1, TempList),      % masuk kartu ke list
+    insert_tail(ListKartu, Kartu1, TempList),
     insert_tail(TempList, Kartu2, ListBaru),
-    
-    retract(kartu_tangan(NamaTarget, _)),           % update kartu target
+    retract(kartu_tangan(NamaTarget, _)),
     assertz(kartu_tangan(NamaTarget, ListBaru)).
 
-tangkap(_) :-           % kalau penangkapan gagal 
+tangkap(_) :-                               % kalau gagal menangkap -> kena denda 1 kartu
     write('Gagal menangkap! Target aman atau kartunya tidak bersisa 1.'), nl,
+    
+    giliran(PemainSekarang),        % ambil status pemain sekarang lalu diberi denda
+    format('Hukuman: ~w mendapatkan 1 kartu penalti karena salah tuduh!~n', [PemainSekarang]),
+    random_ambilkartu(KartuPenalti),
+    kartu_tangan(PemainSekarang, ListKartuLama),
+    insert_tail(ListKartuLama, KartuPenalti, ListKartuBaru),
+    retract(kartu_tangan(PemainSekarang, _)),
+    assertz(kartu_tangan(PemainSekarang, ListKartuBaru)),
+    
     fail.

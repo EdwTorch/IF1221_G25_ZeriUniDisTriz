@@ -1,5 +1,3 @@
-:- include('utils.pl').
-
 % Rule poin per jenis kartu
 poin_kartu(Jenis, Poin) :- integer(Jenis), Poin is Jenis, !.
 poin_kartu(skip, 10) :- !.
@@ -81,6 +79,7 @@ tukar_sort([Pemain|Sisa], [Pemain|HasilSisa]) :-
     tukar_sort(Sisa, HasilSisa).
 
 % Rule utama endGame
+/*
 endGame :-
     giliran(Pemenang),
     format('Permainan selesai! ~w menghabiskan semua kartunya!~n~n', [Pemenang]),
@@ -93,6 +92,7 @@ endGame :-
     get_head(SortedList, Juara1),
     format('~nSelamat, ~w menjadi pemenang!~n', [Juara1]),
     retractall(game_started).
+*/
 
 % Helper menampilkan
 tampilkan_perhitungan([]).

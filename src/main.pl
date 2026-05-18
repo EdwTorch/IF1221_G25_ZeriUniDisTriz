@@ -223,7 +223,7 @@ endGame :-
     retractall(game_started).
 
 saveGame:- 
-    % list_uni(ListUni),
+    list_uni(ListUni),
     urutan_pemain(Urutan,_),
     giliran(Nama),
     arah(ArahPermainan),

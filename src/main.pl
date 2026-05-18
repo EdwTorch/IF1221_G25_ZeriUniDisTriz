@@ -136,22 +136,22 @@ lihatCommand :-
     kartu_tangan(Pemain, ListKartu),
     
     write('Aksi utama yang tersedia:'), nl,
-    (JenisNow == 'plus_empat', efek('plus_empat') ->
+    ( (JenisNow == 'plus_empat', efek('plus_empat')) ->
         write('1. ambilKartu'), nl,
         write('2. tantang'), nl
-        ; JenisNow == 'plus_dua', efek('plus_dua') ->
-            write('1. ambilKartu'), nl
-        ; (JenisNow == 'plus_empat' ; JenisNow == 'wildcard') ->
-            warna_wild(WarnaAktif),
-            (valid_play(ListKartu, WarnaAktif, JenisNow) ->
-                write('1. mainkanKartu()'), nl,
-                write('2. ambilKartu'), nl
-            ;   write('1. ambilKartu'), nl
-            )
-        ; (valid_play(ListKartu, WarnaNow, JenisNow) ->
+    ; (JenisNow == 'plus_dua', efek('plus_dua')) ->
+        write('1. ambilKartu'), nl
+    ; ((JenisNow == 'plus_empat' ; JenisNow == 'wildcard')) ->
+        warna_wild(WarnaAktif),
+        (valid_play(ListKartu, WarnaAktif, JenisNow) ->
             write('1. mainkanKartu()'), nl,
             write('2. ambilKartu'), nl
-        ; write('1. ambilKartu'), nl)),
+        ;   write('1. ambilKartu'), nl
+        )
+    ; (valid_play(ListKartu, WarnaNow, JenisNow) ->
+        write('1. mainkanKartu()'), nl,
+        write('2. ambilKartu'), nl
+    ;   write('1. ambilKartu'), nl)),
     nl,
     
     write('Aksi pendukung yang tersedia:'), nl,
@@ -222,7 +222,8 @@ mainkanKartu(NomorUrut) :-
         assertz(urutan_pemain(ListNama, NewestIdx)),
 
         nl, write('--- Giliran Selesai ---'), nl,                          % ganti giliran
-        format('Giliran ~w',[NextNama]),nl;   
+        format('Giliran ~w',[NextNama]),nl, lihatCommand, !
+        ;   
         % jika tidak valid
         write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl,
         fail

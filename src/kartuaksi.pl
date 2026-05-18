@@ -53,8 +53,10 @@ efek_aksi('plus_empat') :-
     retractall(yg_keluarin_plus4(_)),
     assertz(yg_keluarin_plus4(PemainSekarang)),
     efek_aksi('wildcard'),
-    assertz(efek('plus_empat')), !.
-    
+    retractall(efek(_)), 
+    assertz(efek(plus_empat)),
+    write('Kartu +4 dikeluarkan! Pemain berikutnya bisa menantang.'), nl, !.
+
 efek_aksi(_) :- !.
 
 % helper warna pilihan

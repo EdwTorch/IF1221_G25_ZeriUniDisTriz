@@ -13,6 +13,7 @@ poin_kartu(mimic, 20) :- !.
 % Dua list digabungkan menjadi satu list
 sambung_dua([], List, List).
 sambung_dua([Kartu|Sisa], List, [Kartu|Hasil]) :- sambung_dua(Sisa, List, Hasil).
+
 % Tiga list diubah jadi ascii lalu digabungkan menjadi satu list melalui rekurens
 sambung_tiga(Satu, Dua, Tiga, Hasil) :-
     (cek_list(Satu) -> List1 = Satu ; name(Satu, List1)),
@@ -27,12 +28,15 @@ jabarkan_kartu([kartu(Warna, Jenis, _)], Deskripsi, PoinStr, Poin) :-
     poin_kartu(Jenis, Poin),
     sambung_tiga(Warna, "-", Jenis, Deskripsi),
     name(Poin, PoinStr), !.
+
 jabarkan_kartu([kartu(Warna, Jenis, _)|Sisa], DeskripsiTotal, PoinStrTotal, Total) :-
     poin_kartu(Jenis, Poin),
     jabarkan_kartu(Sisa, SisaDeskripsi, SisaPoinStr, SisaTotal),
+    
     Total is Poin + SisaTotal,
     sambung_tiga(Warna, "-", Jenis, DeskripsiAwal),
     sambung_tiga(DeskripsiAwal, " + ", SisaDeskripsi, DeskripsiTotal),
+    
     name(Poin, PoinStr),
     sambung_tiga(PoinStr, " + ", SisaPoinStr, PoinStrTotal).
 
@@ -54,6 +58,7 @@ bandingkan_pemain(Result, Pemain1, Pemain2) :-
 lebih_baik(Pemain1, Pemain2) :-
     total_poin_pemain(Pemain1, Poin1),
     total_poin_pemain(Pemain2, Poin2),
+    
     (Poin1 < Poin2 -> true ; Poin1 > Poin2 -> fail ;
         kartu_tangan(Pemain1, Kartu1), length(Kartu1, L1),
         kartu_tangan(Pemain2, Kartu2), length(Kartu2, L2),

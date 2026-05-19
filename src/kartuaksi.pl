@@ -72,7 +72,8 @@ warna_pilihan('biru', 'biru') :- !.
 % Helper nambah kartu (plus 2, plus 4, plus 6)
 tambah_kartu(_,0) :- !.
 tambah_kartu(Pemain, Tambahan) :-
-    random_ambilkartu(Element),ekstrak_kartu(Element,Warna,Jenis),  
+    random_ambilkartu(Element),ekstrak_kartu(Element,Warna,Jenis),
+    urutan_pemain(ListNama, Idx), get_idx(ListNama, Pemain, Idx), jml_pemain(Jml),
     
     format('~w mendapatkan kartu: ~w-~w',[Pemain,Warna,Jenis]),nl,nl,
     

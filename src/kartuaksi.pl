@@ -32,6 +32,10 @@ efek_aksi('wildcard') :-
     write('4. Biru'), nl,
     write('Pilihan anda: '), nl,
     read(WarnaPilihan),
+    ((integer(WarnaPilihan), (WarnaPilihan <1; WarnaPilihan>4 ))-> 
+    write('Anda Hanya dapat memilih dari angka 1 sampai 4, tolong input ulang'),efek_aksi('wildcard');
+    (atom(WarnaPilihan) -> write('Anda harus memasukkan angka antara 1-4, tolong input ulang'),efek_aksi('wildcard')
+    ; true)),
     warna_pilihan(WarnaPilihan, Warna),
     
     retractall(warna_wild(_)),
@@ -67,7 +71,7 @@ warna_pilihan('biru', 'biru') :- !.
 tambah_kartu(_,0) :- !.
 tambah_kartu(Pemain, Tambahan) :-
     random_ambilkartu(Element),ekstrak_kartu(Element,Warna,Jenis),
-    urutan_pemain(ListNama, Idx), get_idx(ListNama, Pemain, Idx), jml_pemain(Jml),
+    
     
     format('~w mendapatkan kartu: ~w-~w',[Pemain,Warna,Jenis]),nl,nl,
     

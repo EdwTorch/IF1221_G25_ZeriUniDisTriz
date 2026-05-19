@@ -1,5 +1,5 @@
 % Rule poin per jenis kartu
-poin_kartu(Jenis, Poin) :- integer(Jenis), Poin is Jenis, !.
+poin_kartu(Jenis, Poin) :- integer(Jenis), (Jenis =:=0 -> Poin is 1;Poin is Jenis ), !.
 poin_kartu(skip, 10) :- !.
 poin_kartu(reverse, 10) :- !.
 poin_kartu(plus_dua, 10) :- !.

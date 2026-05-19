@@ -24,6 +24,7 @@
 :- include('saveloadGame.pl').
 :- include('kartuaksi.pl').
 :- include('tantang.pl').
+:- include('uni_tangkap.pl').
 
 % Kode StartGame Telah disanitasi
 startGame:- retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),

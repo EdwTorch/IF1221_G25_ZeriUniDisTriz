@@ -21,9 +21,9 @@ insert_txt(Nama,Hasil):-
     name(Nama,ListAscii),
     insert_tail(ListAscii,46,ListAscii1), % tambah .
     insert_tail(ListAscii1,116,ListAscii2), % tambah t
-    insert_tail(ListAscii2,120,ListAscii3),
-    insert_tail(ListAscii3,116,ListHasil),
-    name(Hasil,ListHasil).
+    insert_tail(ListAscii2,120,ListAscii3), % tambah x
+    insert_tail(ListAscii3,116,ListHasil), % tambah t
+    name(Hasil,ListHasil). % balikin ke text lagi
 
 loadkartu(Jml,[HeadPemain|TailPemain],LoadFileFormat):-
 loadkartuhelper(0,Jml,[HeadPemain|TailPemain],LoadFileFormat),!.

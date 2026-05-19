@@ -227,7 +227,7 @@ mainkanKartu(NomorUrut) :-
         ; true),
 
         (Jenis == 'plus_empat' ->
-            KartuMeja = kartu(WarnaMeja, JenisMeja, _),
+            kartu(WarnaMeja, JenisMeja, _),
             retractall(warna_sebelumnya(_)),
             assertz(warna_sebelumnya(WarnaMeja)),
             retractall(jenis_sebelumnya(_)),

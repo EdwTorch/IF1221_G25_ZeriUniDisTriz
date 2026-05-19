@@ -72,6 +72,13 @@ ambilKartu :-
     urutan_pemain(ListNama, Idx),
     jml_pemain(Jml),
 
+    list_uni(ListUnii),
+    get_idx(ListUnii,Pemain,IdxUni),
+    (IdxUni =\= -1 -> del(ListUnii,IdxUni,ListBaruUnii),
+        retractall(list_uni(_)),
+        assertz(list_uni(ListBaruUnii))
+    ;true),
+
     tambah_kartu(Pemain, 2),
     retract(efek('plus_dua')),
 
@@ -88,6 +95,13 @@ ambilKartu :-
     giliran(Pemain),
     urutan_pemain(ListNama, Idx),
     jml_pemain(Jml),
+    
+    list_uni(ListUnii),
+    get_idx(ListUnii,Pemain,IdxUni),
+    (IdxUni =\= -1 -> del(ListUnii,IdxUni,ListBaruUnii),
+        retractall(list_uni(_)),
+        assertz(list_uni(ListBaruUnii))
+    ;true),
 
     tambah_kartu(Pemain, 4),
     retract(efek('plus_empat')),
@@ -102,9 +116,15 @@ ambilKartu :-
 
 ambilKartu:-
     random_ambilkartu(Element),ekstrak_kartu(Element,Warna,Jenis), urutan_pemain(ListNama,Idx), 
-    get_idx(ListNama,Nama,Idx),jml_pemain(Jml), 
+    get_idx(ListNama,Nama,Idx),jml_pemain(Jml), list_uni(ListUnii),
     
     format('~w mendapatkan kartu: ~w-~w',[Nama,Warna,Jenis]),nl,nl,
+
+    get_idx(ListUnii,Nama,IdxUni),
+    (IdxUni =\= -1 -> del(ListUnii,IdxUni,ListBaruUnii),
+        retractall(list_uni(_)),
+        assertz(list_uni(ListBaruUnii))
+    ;true),
     
     kartu_tangan(Nama,KartuLama),
     insert_tail(KartuLama,Element,KartuBaru),
@@ -277,6 +297,9 @@ endGame :-
     retractall(game_started),exita.
 
 saveGame:- 
+
+    ((efek('plus_dua') ; efek('plus_empat')) -> write('Anda tidak dapat saveGame saat giliran ini!'), nl, fail
+    ; true),
     list_uni(ListUni),
     urutan_pemain(Urutan,_),
     giliran(Nama),

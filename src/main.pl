@@ -150,13 +150,17 @@ lihatCommand :-
         warna_wild(WarnaAktif),
         (valid_play(ListKartu, WarnaAktif, JenisNow) ->
             write('1. mainkanKartu()'), nl,
-            write('2. ambilKartu'), nl
-        ;   write('1. ambilKartu'), nl
+            write('2. ambilKartu'), nl,
+            write('3. tangkap()'), nl
+        ;   write('1. ambilKartu'), nl,
+            write('2. tangkap()'), nl
         )
     ; (valid_play(ListKartu, WarnaNow, JenisNow) ->
         write('1. mainkanKartu()'), nl,
-        write('2. ambilKartu'), nl
-    ;   write('1. ambilKartu'), nl)),
+        write('2. ambilKartu'), nl,
+        write('3. tangkap()'), nl
+    ;   write('1. ambilKartu'), nl,
+        write('2. tangkap()'), nl)),
     nl,
     
     write('Aksi pendukung yang tersedia:'), nl,

@@ -16,8 +16,8 @@ efek_aksi('plus_dua') :-
     jml_pemain(Jml),
     next_giliran(Idx, TargetIdx, Jml),
     get_idx(List, TargetPemain, TargetIdx),
-    tambah_kartu(TargetPemain, 2),
     write('Pemain berikutnya mendapatkan 2 kartu dan kehilangan giliran.'), nl, 
+    tambah_kartu(TargetPemain, 2),
     retractall(urutan_pemain(_,_)),assertz(urutan_pemain(List,TargetIdx)),!.
 
 % reverse

@@ -11,6 +11,7 @@
 :- dynamic(jenis_sebelumnya/1). % Menyimpan jenis di meja sesaat SEBELUM diganti oleh kartu plus 4
 :- dynamic(yg_keluarin_plus4/1).    % Menyimpan nama pemain yang mengeluarkan kartu plus 4
 :- dynamic(warna_wild/1).       % Menyimpan warna aktif yang dipilih pemain setelah mengeluarkan kartu wild atau plus 4
+:- dynamic(reverse_pemain/1).
 
 % struktur kartu -> kartu(Warna, Jenis, normal/hide)
  
@@ -27,7 +28,7 @@
 % Kode StartGame Telah disanitasi
 startGame:- retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),
     retractall(giliran(_)), retractall(discard_top(_)), retractall(kartu_tangan(_,_)), retractall(list_uni(_)),retractall(arah(_)),
-    retractall(warna_sebelumnya(_)),retractall(yg_keluarin_plus4(_)),retractall(warna_wild(_)), % reset semua dynamic
+    retractall(warna_sebelumnya(_)),retractall(yg_keluarin_plus4(_)),retractall(warna_wild(_)), retractall(reverse_pemain(_)), % reset semua dynamic
     
     inputJml(Jml),assertz(jml_pemain(Jml)),inputPemain(Jml,DaftarPemain), assertz(arah('kanan')), assertz(list_uni([])),% input pemain dan Jumlah Pemain
 
@@ -38,6 +39,9 @@ startGame:- retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall
     write('Setiap pemain mendapatkan 7 kartu acak'),
     simpan_kartu(UrutanPemain,UrutanPemain,Jml),
     nl,nl,
+    
+    reverse_list(UrutanPemain, ReversedPemain),
+    assertz(reverse_pemain(ReversedPemain)),
     
     get_head(UrutanPemain,Pemain1), % Ambil Pemain Pertama
     
@@ -118,14 +122,15 @@ ambilKartu:-
 
 cekInfo :-
     discard_top(kartu(WarnaTeratas, JenisTeratas, _)), 
-    % arah(ArahPermainan),
     
     write('Kartu discard top: '), write(WarnaTeratas), write('-'), write(JenisTeratas), nl,
     
     urutan_pemain(DaftarPemain,_),
+    reverse_pemain(Reversed),
+    write('Urutan pemain: '), 
+    (arah('kanan') -> print_list_pemain(DaftarPemain), nl
+    ; print_list_pemain(Reversed), nl),
     
-    write('Urutan pemain: '), print_list_pemain(DaftarPemain), nl,
-    %  write('Arah Permainan: '), write(Arah),nl, 
     write('Informasi pemain: '), nl,
     
     print_info_pemain(DaftarPemain), !.
@@ -221,7 +226,8 @@ mainkanKartu(NomorUrut) :-
         next_giliran(Idx, NewestIdx, Jml),        % urutan normal
         get_idx(ListNama, NextNama, NewestIdx))),
 
-
+        retractall(discard_top(_)),
+        assertz(discard_top(KartuPilihan)),
         retractall(giliran(_)),
         assertz(giliran(NextNama)),
         retractall(urutan_pemain(_,_)),

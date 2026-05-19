@@ -174,7 +174,7 @@ lihatKartu :-
     (kartu_tangan(Pemain, ListKartu) ->
         write('Berikut kartu yang anda miliki.'), nl,
         print_list_kartu(ListKartu, 1) ;
-        write('Data kartu tidak ditemukan!'), nl), !. 
+        write('Data kartu tidak ditemukan!'), nl), !.
 
 mainkanKartu(NomorUrut) :-
     giliran(Pemain),                      % cek giliran 
@@ -221,8 +221,12 @@ mainkanKartu(NomorUrut) :-
         del(ListKartu, IndexHapus, ListBaru),                              % update kartu_tangan
         retract(kartu_tangan(Pemain, _)),
         assertz(kartu_tangan(Pemain, ListBaru)),
+
+        panjang(0,PjgList,ListBaru),
+        (PjgList =:=0 -> endGame,!;nl),
         retractall(discard_top(_)),
         assertz(discard_top(KartuPilihan)),
+        
         (Jenis \== wildcard, Jenis \== plus_empat ->
             retractall(warna_wild(_))
         ;   true
@@ -250,7 +254,7 @@ mainkanKartu(NomorUrut) :-
         assertz(urutan_pemain(ListNama, NewestIdx)),
 
         nl, write('--- Giliran Selesai ---'), nl,                          % ganti giliran
-        format('Giliran ~w',[NextNama]),nl
+        format('Giliran ~w',[NextNama]),nl,!
         ;   
         % jika tidak valid
         write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl,
@@ -263,14 +267,14 @@ endGame :-
     giliran(Pemenang),
     format('Permainan selesai! ~w menghabiskan semua kartunya!~n~n', [Pemenang]),
     write('Berikut perhitungan poin sisa kartu:'), nl,
-    urutan_pemain(DaftarPemain),
+    urutan_pemain(DaftarPemain,_),
     tampilkan_perhitungan(DaftarPemain), nl,
     sort_pemain(DaftarPemain, SortedList),
     write('Urutan pemenang:'), nl,
     tampilkan_peringkat(SortedList, 1),
     get_head(SortedList, Juara1),
     format('~nSelamat, ~w menjadi pemenang!~n', [Juara1]),
-    retractall(game_started).
+    retractall(game_started),exita.
 
 saveGame:- 
     list_uni(ListUni),

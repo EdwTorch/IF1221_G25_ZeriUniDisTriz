@@ -46,6 +46,14 @@ get_head([Head|_],Head).
 cek_list([]).
 cek_list([_|_]).
 
+% reverse list
+reverse_list(List, Reversed) :-
+        reverse_helper(List, [], Reversed).
+        
+reverse_helper([], Accumulator, Accumulator).
+reverse_helper([Head|Tail], Accumulator, Reversed) :-
+        reverse_helper(Tail, [Head|Accumulator], Reversed).
+
 readformat(Stream,Value):-     
         read_term(Stream,Term,[]),
         Term = (_:Value),!.

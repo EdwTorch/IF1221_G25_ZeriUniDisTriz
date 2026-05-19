@@ -65,7 +65,7 @@ Baca Urutan Pemainnya, Informasikan Dia Dapat Kartu Apa, Tambah Ke List decknya 
 Setelah Itu Update Urutan Giliran dan Idx Urutan Pemain.
 */
 % Ambil kartu untuk plus 2
-/* ambilKartu :-
+ambilKartu :-
     efek('plus_dua'), !,
     giliran(Pemain),
     urutan_pemain(ListNama, Idx),
@@ -79,7 +79,7 @@ Setelah Itu Update Urutan Giliran dan Idx Urutan Pemain.
     
     format('Giliran ~w',[NextNama]),nl,
     retractall(giliran(_)), assertz(giliran(NextNama)),
-    retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)). */
+    retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)). 
 
 % Ambil kartu untuk plus 4
 ambilKartu :-
@@ -177,6 +177,10 @@ mainkanKartu(NomorUrut) :-
     urutan_pemain(ListNama,Idx),
     jml_pemain(Jml),
 
+    % cek apakah pemain terkena efek plus (tidak bisa mainkanKartu)
+    ((efek('plus_dua') ; efek('plus_empat')) -> write('Anda tidak dapat mainkanKartu saat giliran ini!'), nl, fail
+    ; true),
+
     (   ambil_kartu_ke(NomorUrut, ListKartu, KartuPilihan)      % ambil kartu dari list
     ->  true
     ;   write('Nomor urut tidak valid! Membatalkan aksi.'), nl, fail
@@ -190,6 +194,13 @@ mainkanKartu(NomorUrut) :-
         % jika valid
         KartuPilihan = kartu(Warna, Jenis, _),                             % warna jenis ditampilkan 
         discard_top(kartu(WarnaMeja, JenisMeja, _)),
+
+
+        % Mencegah plus 2 berturut-turut
+        (JenisMeja == 'plus_dua', Jenis == 'plus_dua' ->
+            write('Kartu +2 tidak boleh dimainkan berturut-turut!'), nl, fail
+        ; true),
+
         (Jenis == 'plus_empat' ->
             KartuMeja = kartu(WarnaMeja, JenisMeja, _),
             retractall(warna_sebelumnya(_)),
@@ -207,7 +218,7 @@ mainkanKartu(NomorUrut) :-
         assertz(kartu_tangan(Pemain, ListBaru)),
 
         efek_aksi(Jenis),
-        ((Jenis == 'skip'; Jenis == 'plus_dua')->             % aksi skip
+        (Jenis == 'skip' ->             % aksi skip
         urutan_pemain(_, NewIdx),
         next_giliran(NewIdx,NewestIdx,Jml),
         get_idx(ListNama, NextNama, NewestIdx)

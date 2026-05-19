@@ -216,6 +216,12 @@ mainkanKartu(NomorUrut) :-
         del(ListKartu, IndexHapus, ListBaru),                              % update kartu_tangan
         retract(kartu_tangan(Pemain, _)),
         assertz(kartu_tangan(Pemain, ListBaru)),
+        retractall(discard_top(_)),
+        assertz(discard_top(KartuPilihan)),
+        (Jenis \== wildcard, Jenis \== plus_empat ->
+            retractall(warna_wild(_))
+        ;   true
+        ),
 
         efek_aksi(Jenis),
         (Jenis == 'skip' ->             % aksi skip

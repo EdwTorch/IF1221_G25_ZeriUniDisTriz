@@ -2,11 +2,21 @@
 uni(NomorUrut) :-
     giliran(Pemain),
     kartu_tangan(Pemain, ListKartu),
-
+    jml_pemain(Jml),
+    urutan_pemain(ListNama, Idx),
     panjang(0, JumlahKartu, ListKartu),             
     (   JumlahKartu == 2
     ->  true
-    ;   write('Syarat tidak terpenuhi! Kartu di tanganmu tidak berjumlah 2.'), nl, fail
+    ;   write('Syarat tidak terpenuhi! Kartu di tanganmu tidak berjumlah 2.'), nl,
+        format('~w mendapatkan penalti 1 kartu acak dan kehilangan giliran',[Pemain]), nl, random_ambilkartu(Kartu1),
+        insert_tail(ListKartu,Kartu1,ListKartuBaru),retract(kartu_tangan(Pemain, _)),
+        
+        assertz(kartu_tangan(Pemain, ListKartuBaru)), next_giliran(Idx, NewestIdx, Jml),get_idx(ListNama, NextNama, NewestIdx),
+    
+        format('Giliran ~w',[NextNama]),nl,
+        retractall(giliran(_)), assertz(giliran(NextNama)),
+        retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)), fail
+
     ),
 
     urutan_pemain(ListNama, Idx),
@@ -52,8 +62,7 @@ uni(NomorUrut) :-
         format('Giliran ~w~n',[NextNama])
         
     ;   
-        write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl,
-        fail
+        write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl,fail
     ).
 
 % FUNGSI TANGKAP 
@@ -74,7 +83,17 @@ tangkap(NamaTarget) :-
     insert_tail(ListKartu, Kartu1, TempList),
     insert_tail(TempList, Kartu2, ListBaru),
     retract(kartu_tangan(NamaTarget, _)),
-    assertz(kartu_tangan(NamaTarget, ListBaru)).
+    assertz(kartu_tangan(NamaTarget, ListBaru)),
+    
+    jml_pemain(Jml),
+    urutan_pemain(ListNama, Idx),
+    next_giliran(Idx, NewestIdx, Jml),
+    get_idx(ListNama, NextNama, NewestIdx),
+    
+    format('Giliran ~w',[NextNama]),nl,
+    retractall(giliran(_)), assertz(giliran(NextNama)),
+    retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)). 
+
 
 tangkap(_) :-                               % kalau gagal menangkap -> kena denda 1 kartu
     write('Gagal menangkap! Target aman atau kartunya tidak bersisa 1.'), nl,
@@ -87,4 +106,11 @@ tangkap(_) :-                               % kalau gagal menangkap -> kena dend
     retract(kartu_tangan(PemainSekarang, _)),
     assertz(kartu_tangan(PemainSekarang, ListKartuBaru)),
     
-    fail.
+    jml_pemain(Jml),
+    urutan_pemain(ListNama, Idx),
+    next_giliran(Idx, NewestIdx, Jml),
+    get_idx(ListNama, NextNama, NewestIdx),
+    
+    format('Giliran ~w',[NextNama]),nl,
+    retractall(giliran(_)), assertz(giliran(NextNama)),
+    retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)). 

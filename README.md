@@ -101,7 +101,7 @@ Setiap kartu selain wild card & wild draw four memiliki 4 warna, yaitu merah, ku
 Anggota G25 ZeriUniDisTriz :
 | Nama | NIM |
 |---|---|
-| There Estelina Ratu Udju | 13525088 |
+| Theresia Estelina Ratu Udju | 13525088 |
 | Edward Terrance Lie | 13525127 |
 | Christabelcyne Costan | 13525141 |
 | Natan Danuarta Ariel Wicaksana | 13525143 |

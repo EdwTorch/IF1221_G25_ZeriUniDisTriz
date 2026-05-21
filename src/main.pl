@@ -67,6 +67,7 @@ Setelah Itu Update Urutan Giliran dan Idx Urutan Pemain.
 */
 % Ambil kartu untuk plus 2
 ambilKartu :-
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika Belum StartGame atau LoadGame'),!,fail),
     efek('plus_dua'), !,
     giliran(Pemain),
     urutan_pemain(ListNama, Idx),
@@ -91,6 +92,7 @@ ambilKartu :-
 
 % Ambil kartu untuk plus 4
 ambilKartu :-
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika Belum StartGame atau LoadGame'),!,fail),
     efek('plus_empat'), !,
     giliran(Pemain),
     urutan_pemain(ListNama, Idx),
@@ -115,6 +117,7 @@ ambilKartu :-
     retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)).
 
 ambilKartu:-
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika Belum StartGame atau LoadGame'),!,fail),
     random_ambilkartu(Element),ekstrak_kartu(Element,Warna,Jenis), urutan_pemain(ListNama,Idx), 
     get_idx(ListNama,Nama,Idx),jml_pemain(Jml), list_uni(ListUnii),
     
@@ -142,6 +145,7 @@ ambilKartu:-
 % Pengambilan Kartu belum dimasukkan ke dalam list kartu milik Pemain tersebut, dan belum bisa ganti giliran
 
 cekInfo :-
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika Belum StartGame atau LoadGame'),fail),
     discard_top(kartu(WarnaTeratas, JenisTeratas, _)), 
     
     write('Kartu discard top: '), write(WarnaTeratas), write('-'), write(JenisTeratas), nl,
@@ -157,6 +161,7 @@ cekInfo :-
     print_info_pemain(DaftarPemain), !.
 
 lihatCommand :-
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika Belum StartGame atau LoadGame'),fail),
     discard_top(kartu(WarnaNow, JenisNow, _)),
     giliran(Pemain),
     kartu_tangan(Pemain, ListKartu),
@@ -190,6 +195,7 @@ lihatCommand :-
     write('3. cekInfo'), nl, !.
 
 lihatKartu :-
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika Belum StartGame atau LoadGame'),fail),
     giliran(Pemain),
     (kartu_tangan(Pemain, ListKartu) ->
         write('Berikut kartu yang anda miliki.'), nl,
@@ -197,6 +203,7 @@ lihatKartu :-
         write('Data kartu tidak ditemukan!'), nl), !.
 
 mainkanKartu(NomorUrut) :-
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika Belum StartGame atau LoadGame'),fail),
     giliran(Pemain),                      % cek giliran 
     kartu_tangan(Pemain, ListKartu),
     urutan_pemain(ListNama,Idx),
@@ -297,7 +304,7 @@ endGame :-
     retractall(game_started),exita.
 
 saveGame:- 
-
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika Belum StartGame atau LoadGame'),fail),
     ((efek('plus_dua') ; efek('plus_empat')) -> write('Anda tidak dapat saveGame saat giliran ini!'), nl, fail
     ; true),
     list_uni(ListUni),
@@ -339,12 +346,9 @@ saveGame:-
     close(LoadGameFormat),!.
     
 loadGame:-
-    directory_files('.',Files),
     write('Masukkan nama file yang akan dimuat: '),
     read(Input),
-    insert_txt(Input,Inputtxt),
-    get_idx(Files,Inputtxt,Index),
-    ((Index =\= -1) -> nl; write('Maaf Nama file yang anda masukkan tidak tersedia'),fail),
+    ((nama_file(Input)) -> true; write('Maaf Nama file yang anda masukkan tidak tersedia'),fail),
 
     retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),
     retractall(giliran(_)), retractall(discard_top(_)), retractall(kartu_tangan(_,_)), retractall(list_uni(_)),retractall(arah(_)),
@@ -377,7 +381,9 @@ loadGame:-
     loadkartu(Pjg,UrutanPemain,LoadFileFormat),
     
     format('Status permainan berhasil dimuat dari ~w.txt.',[Input]),nl,
-    format('Melanjutkan Giliran ~w.',[PemainNow]),close(LoadFileFormat),!.
+    format('Melanjutkan Giliran ~w.',[PemainNow]),close(LoadFileFormat),
+    
+    assertz(game_started),!.
 
 % exits sementara
 exita:-  retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),

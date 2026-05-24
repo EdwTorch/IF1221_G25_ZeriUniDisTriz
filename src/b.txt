@@ -1,0 +1,8 @@
+urutan_pemain: [a,s].
+giliran:s.
+discard_top:kuning-3.
+warna_aktif:kuning.
+arah_permainan:kanan.
+status_UNI:[].
+kartu(a):[kuning-skip-hide,biru-2-hide,kuning-1,biru-skip,biru-0,kuning-0,biru-1].
+kartu(s):[hitam-wildcard,hijau-9,hitam-plus_empat,merah-9,biru-2,merah-2,biru-4,biru-plus_dua].

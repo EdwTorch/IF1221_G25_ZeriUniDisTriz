@@ -1,5 +1,5 @@
 sembunyikanKartu(IdxKartu):-
-    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika Belum startGame atau loadGame'),nl,fail),
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),nl,fail),
     ((efek('plus_dua') ; efek('plus_empat')) -> 
         write('Anda tidak dapat menyembunyikan kartu saat ini!'), nl, fail
     ; true),
@@ -31,7 +31,7 @@ sembunyikanKartu(IdxKartu):-
     ; write('Tidak boleh menyembunyikan kartu karena hanya tersisa 1 kartu!.'), nl, fail).
 
 tampilkanKartu(NomorUrut) :-
-    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika Belum startGame atau loadGame'),nl,fail),
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),nl,fail),
     ((efek('plus_dua') ; efek('plus_empat')) -> 
         write('Anda tidak dapat menampilkan kartu saat ini!'), nl, fail
     ; true),

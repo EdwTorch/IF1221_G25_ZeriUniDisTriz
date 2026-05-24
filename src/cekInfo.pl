@@ -1,11 +1,3 @@
-/* cekInfo :-
-    discard_top(kartu(WarnaTeratas, JenisTeratas, _)),
-    write('Kartu discard top: '), write(WarnaTeratas), write('-'), write(JenisTeratas), nl,
-    urutan_pemain(DaftarPemain),
-    write('Urutan pemain: '), print_list_pemain(DaftarPemain), nl,
-    write('Informasi pemain: '), nl,
-    print_info_pemain(DaftarPemain), !. Dipindah ke Main */ 
-
 print_list_pemain([Nama]) :-
     write(Nama), !.
 print_list_pemain([Nama|SisaDaftar]) :-

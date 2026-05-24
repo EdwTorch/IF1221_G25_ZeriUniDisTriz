@@ -2,16 +2,16 @@
 :- dynamic(kartu_tangan/2).      % Menunjukan kartu yang ada di tangan pemain -> kartu_tangan(Pemain, ListKartu)
 :- dynamic(discard_top/1).       % Menunjukan kartu paling atas di menja -> discard_top(kartu(Warna, Jenis, normal/hide))
 :- dynamic(efek/1).              % Menunjukan efek yang berlaku saat ini (plus 2, reverse, etc).
-:- dynamic(jml_pemain/1). % menyimpan jumlah pemain saat ini
-:- dynamic(urutan_pemain/2). % urutan_pemain(ListUrutan,IdxSaatini)
-:- dynamic(game_started/0). % Menunjukkan state apakah game sudah dimulai.
-:- dynamic(arah/1).             % arah kemana default ke kanan.
-:- dynamic(list_uni/1).         % list orang yang pernah ngomon UNIIIIIIIIII
-:- dynamic(warna_sebelumnya/1). % Menyimpan warna di meja sesaat SEBELUM diganti oleh kartu plus 4
-:- dynamic(jenis_sebelumnya/1). % Menyimpan jenis di meja sesaat SEBELUM diganti oleh kartu plus 4
-:- dynamic(yg_keluarin_plus4/1).    % Menyimpan nama pemain yang mengeluarkan kartu plus 4
-:- dynamic(warna_wild/1).       % Menyimpan warna aktif yang dipilih pemain setelah mengeluarkan kartu wild atau plus 4
-:- dynamic(reverse_pemain/1).
+:- dynamic(jml_pemain/1).        % menyimpan jumlah pemain saat ini
+:- dynamic(urutan_pemain/2).     % urutan_pemain(ListUrutan,IdxSaatini)
+:- dynamic(game_started/0).      % Menunjukkan state apakah game sudah dimulai.
+:- dynamic(arah/1).              % arah kemana default ke kanan.
+:- dynamic(list_uni/1).          % list orang yang pernah ngomon UNIIIIIIIIII
+:- dynamic(warna_sebelumnya/1).  % Menyimpan warna di meja sesaat SEBELUM diganti oleh kartu plus 4
+:- dynamic(jenis_sebelumnya/1).  % Menyimpan jenis di meja sesaat SEBELUM diganti oleh kartu plus 4
+:- dynamic(yg_keluarin_plus4/1). % Menyimpan nama pemain yang mengeluarkan kartu plus 4
+:- dynamic(warna_wild/1).        % Menyimpan warna aktif yang dipilih pemain setelah mengeluarkan kartu wild atau plus 4
+:- dynamic(reverse_pemain/1).    % Menyimpan list urutan pemain yang direverse
 
 % struktur kartu -> kartu(Warna, Jenis, normal/hide)
  
@@ -63,12 +63,12 @@ startGame:- retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall
 /*
 Alur Ambil Kartu : 
 Ngambil Kartu Secara Random (Lihat Rule nya di utils.pl), Lalu Ekstrak Warna dan Jenisnya
-Baca Urutan Pemainnya, Informasikan Dia Dapat Kartu Apa, Tambah Ke List decknya (Belum Implement),
+Baca Urutan Pemainnya, Informasikan Dia Dapat Kartu Apa, Tambah Ke List decknya,
 Setelah Itu Update Urutan Giliran dan Idx Urutan Pemain.
 */
 % Ambil kartu untuk plus 2
 ambilKartu :-
-    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika Belum StartGame atau LoadGame'),!,fail),
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),!,fail),
     efek('plus_dua'), !,
     giliran(Pemain),
     urutan_pemain(ListNama, Idx),
@@ -93,7 +93,7 @@ ambilKartu :-
 
 % Ambil kartu untuk plus 4
 ambilKartu :-
-    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika Belum StartGame atau LoadGame'),!,fail),
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),!,fail),
     efek('plus_empat'), !,
     giliran(Pemain),
     urutan_pemain(ListNama, Idx),
@@ -118,7 +118,7 @@ ambilKartu :-
     retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)).
 
 ambilKartu:-
-    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika Belum StartGame atau LoadGame'),!,fail),
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),!,fail),
     random_ambilkartu(Element),ekstrak_kartu(Element,Warna,Jenis), urutan_pemain(ListNama,Idx), 
     get_idx(ListNama,Nama,Idx),jml_pemain(Jml), list_uni(ListUnii),
     
@@ -143,10 +143,9 @@ ambilKartu:-
     retractall(urutan_pemain(_,_)), retractall(giliran(_)),assertz(giliran(NextNama)),
     assertz(urutan_pemain(ListNama,NewestIdx)). 
 
-% Pengambilan Kartu belum dimasukkan ke dalam list kartu milik Pemain tersebut, dan belum bisa ganti giliran
 
 cekInfo :-
-    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika Belum StartGame atau LoadGame'),fail),
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),fail),
     discard_top(kartu(WarnaTeratas, JenisTeratas, _)), 
     
     write('Kartu discard top: '), write(WarnaTeratas), write('-'), write(JenisTeratas), nl,
@@ -162,7 +161,7 @@ cekInfo :-
     print_info_pemain(DaftarPemain), !.
 
 lihatCommand :-
-    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika Belum StartGame atau LoadGame'),fail),
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),fail),
     discard_top(kartu(WarnaNow, JenisNow, _)),
     giliran(Pemain),
     kartu_tangan(Pemain, ListKartu),
@@ -214,7 +213,7 @@ lihatCommand :-
     write('3. cekInfo'), nl, !.
 
 lihatKartu :-
-    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika Belum StartGame atau LoadGame'),fail),
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),fail),
     giliran(Pemain),
     (kartu_tangan(Pemain, ListKartu) ->
         write('Berikut kartu yang anda miliki.'), nl,
@@ -222,7 +221,7 @@ lihatKartu :-
         write('Data kartu tidak ditemukan!'), nl), !.
 
 mainkanKartu(NomorUrut) :-
-    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika Belum StartGame atau LoadGame'),fail),
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),fail),
     giliran(Pemain),                      % cek giliran 
     kartu_tangan(Pemain, ListKartu),
     urutan_pemain(ListNama,Idx),
@@ -321,7 +320,7 @@ endGame :-
     retractall(game_started),exita.
 
 saveGame:- 
-    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika Belum StartGame atau LoadGame'),fail),
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),fail),
     ((efek('plus_dua') ; efek('plus_empat')) -> write('Anda tidak dapat saveGame saat giliran ini!'), nl, fail
     ; true),
     list_uni(ListUni),

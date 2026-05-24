@@ -78,21 +78,6 @@ tukar_sort([Pemain1, Pemain2|Sisa], [Pemain2, Pemain1|Sisa]) :-
 tukar_sort([Pemain|Sisa], [Pemain|HasilSisa]) :-
     tukar_sort(Sisa, HasilSisa).
 
-% Rule utama endGame
-/*
-endGame :-
-    giliran(Pemenang),
-    format('Permainan selesai! ~w menghabiskan semua kartunya!~n~n', [Pemenang]),
-    write('Berikut perhitungan poin sisa kartu:'), nl,
-    urutan_pemain(DaftarPemain),
-    tampilkan_perhitungan(DaftarPemain), nl,
-    sort_pemain(DaftarPemain, SortedList),
-    write('Urutan pemenang:'), nl,
-    tampilkan_peringkat(SortedList, 1),
-    get_head(SortedList, Juara1),
-    format('~nSelamat, ~w menjadi pemenang!~n', [Juara1]),
-    retractall(game_started).
-*/
 
 % Helper menampilkan
 tampilkan_perhitungan([]).

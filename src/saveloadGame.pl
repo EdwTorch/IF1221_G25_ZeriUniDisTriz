@@ -54,36 +54,3 @@ compound_formated_kartu_helper([Warna-Jenis|TailKartu],ListSementara,FormatedLis
     % ekstrak_kartu(Element,Warna,Jenis),
     insert_tail(ListSementara,Element,Listbaru),
     compound_formated_kartu_helper(TailKartu,Listbaru,FormatedListKartu).
-
-
-
-/* LoadGame (kita input sendiri ga liat dari directory)
-loadGame:-
-    write('Masukkan nama file yang akan dimuat: '),
-    read(Input),
-    (nama_file(Input)-> write('ada'); write('Maaf Nama file yang anda masukkan tidak tersedia'),fail),
-    retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),
-    retractall(giliran(_)), retractall(discard_top(_)), retractall(kartu_tangan(_,_)), retractall(list_uni(_)),retractall(arah(_)),
-    insert_txt(Input,LoadFileName),
-    open(LoadFileName,read,LoadFileFormat),
-    read(LoadFileFormat,UrutanPemain),
-    read(LoadFileFormat,PemainNow),
-    assertz(giliran(PemainNow)),
-    get_idx(UrutanPemain,PemainNow,Idx),
-    assertz(urutan_pemain(UrutanPemain,Idx)),
-    read(LoadFileFormat,Warna),
-    read(LoadFileFormat,Jenis),
-    Element = kartu(Warna,Jenis,normal),
-    assertz(discard_top(Element)),
-    panjang(0,Pjg,UrutanPemain),
-    loadkartu(Pjg,UrutanPemain,LoadFileFormat),
-    read(LoadFileFormat,ArahPermainan),
-    assertz(arah(ArahPermainan)),
-    read(LoadFileFormat,ListUni),
-    assertz(list_uni(ListUni)),
-    format('Status permainan berhasil dimuat dari ~w.txt.',[Input]),
-    format('Melanjutkan Giliran ~w.',[PemainNow]),close(LoadFileFormat).
-*/
-
-
-

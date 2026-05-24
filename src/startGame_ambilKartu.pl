@@ -1,4 +1,4 @@
-:- include('utils.pl').
+% :- include('utils.pl').
 :- dynamic(kartu_tangan/2).
 :- dynamic(arah/1).
 % fungsi input Jumlah Pemain

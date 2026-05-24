@@ -24,8 +24,8 @@
 :- include('saveloadGame.pl').
 :- include('kartuaksi.pl').
 :- include('tantang.pl').
-:- include('uni_tangkap.pl').
 :- include('sembunyikan.pl').
+:- include('utils.pl').
 
 % Kode StartGame Telah disanitasi
 startGame:- retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),
@@ -304,7 +304,229 @@ mainkanKartu(NomorUrut) :-
         fail
     ).
 
- 
+% Tantang
+tantang :-
+    efek('plus_empat'),
+    yg_keluarin_plus4(Tersangka),
+    urutan_pemain(List, Idx),
+    get_idx(List, Penantang, Idx),
+
+    write('Tantangan dilakukan!'), nl,
+    write('Memeriksa kartu '), write(Tersangka), write('...'), nl,
+
+    warna_sebelumnya(WarnaLama),
+    jenis_sebelumnya(JenisLama),
+
+    kartu_tangan(Tersangka, ListKartu),
+    (cek_kecocokkan(ListKartu, WarnaLama, JenisLama) ->
+        write('Tantangan berhasil!'),nl,
+        format('Pemain ~w memiliki kartu yang cocok.', [Tersangka]), nl,
+        format('Pemain ~w harus mengambil 4 kartu.', [Tersangka]), nl,
+        
+        tambah_kartu(Tersangka, 4),
+        retract(efek('plus_empat')),
+        format('Sekarang giliran ~w.', [Penantang]), nl ;
+    
+        write('Tantangan gagal!'), nl,
+        format('~w tidak memiliki kartu yang cocok.', [Tersangka]), nl,
+        format('~w mendapatkan 6 kartu acak.', [Penantang]), nl,
+        
+        tambah_kartu(Penantang, 6),
+        retract(efek('plus_empat')),
+        
+        urutan_pemain(ListPemain, IdxPenantang),
+        jml_pemain(Jml),
+        
+        next_giliran(IdxPenantang, IdxBaru, Jml),
+        get_idx(ListPemain, PemainBaru, IdxBaru),
+        
+        retractall(giliran(_)), assertz(giliran(PemainBaru)),
+        retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListPemain, IdxBaru)),
+        format('Giliran ~w.', [PemainBaru])), !.
+
+
+% FUNGSI UNI
+uni(NomorUrut) :-
+    giliran(Pemain),
+    kartu_tangan(Pemain, ListKartu),
+    jml_pemain(Jml),
+    urutan_pemain(ListNama, Idx),
+    panjang(0, JumlahKartu, ListKartu),             
+    (   JumlahKartu == 2
+    ->  true
+    ;   write('Syarat tidak terpenuhi! Kartu di tanganmu tidak berjumlah 2.'), nl,
+        format('~w mendapatkan penalti 1 kartu acak dan kehilangan giliran',[Pemain]), nl, random_ambilkartu(Kartu1),
+        insert_tail(ListKartu,Kartu1,ListKartuBaru),retract(kartu_tangan(Pemain, _)),
+        
+        assertz(kartu_tangan(Pemain, ListKartuBaru)), next_giliran(Idx, NewestIdx, Jml),get_idx(ListNama, NextNama, NewestIdx),
+    
+        format('Giliran ~w',[NextNama]),nl,
+        retractall(giliran(_)), assertz(giliran(NextNama)),
+        retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)), fail
+
+    ),
+
+    urutan_pemain(ListNama, Idx),
+    jml_pemain(Jml),
+
+    (   ambil_kartu_ke(NomorUrut, ListKartu, KartuPilihan)
+    ->  true
+    ;   write('Nomor urut tidak valid! Membatalkan aksi.'), nl, fail
+    ),
+    discard_top(KartuAtas),
+
+    (   cek_validitas(KartuPilihan, KartuAtas)
+    ->  
+        KartuPilihan = kartu(Warna, Jenis, _),
+        format('~w teriak "UNI!" dan memainkan kartu: ~w-~w~n', [Pemain, Warna, Jenis]), 
+        IndexHapus is NomorUrut - 1,
+        del(ListKartu, IndexHapus, ListBaru),
+        
+        retract(kartu_tangan(Pemain, ListKartu)),
+        assertz(kartu_tangan(Pemain, ListBaru)),
+        retract(discard_top(KartuAtas)),
+        assertz(discard_top(kartu(Warna, Jenis, normal))),
+
+        list_uni(ListAmanLama),                     % untuk catat pemain ke daftar aman uni 
+        ListAmanBaru = [Pemain | ListAmanLama],
+        retract(list_uni(ListAmanLama)),
+        assertz(list_uni(ListAmanBaru)),
+
+        efek_aksi(Jenis),                       % untuk perpindahan giliran setelah berhasil lempar kartu
+        (Jenis == 'skip' ->             
+            urutan_pemain(_, NewestIdx),
+            get_idx(ListNama, NextNama, NewestIdx)
+        ;   next_giliran(Idx, NewestIdx, Jml),         
+            get_idx(ListNama, NextNama, NewestIdx)
+        ),
+        
+        retractall(giliran(_)),
+        assertz(giliran(NextNama)),
+        retractall(urutan_pemain(_,_)),
+        assertz(urutan_pemain(ListNama, NewestIdx)),
+
+        nl, write('--- Giliran Selesai ---'), nl,                          
+        format('Giliran ~w~n',[NextNama])
+        
+    ;   
+        write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl,fail
+    ).
+
+% FUNGSI TANGKAP 
+tangkap(NamaTarget) :-
+    kartu_tangan(NamaTarget, ListKartu),
+    list_uni(ListAman),
+    
+    panjang(0, JumlahTarget, ListKartu),            % cek syarat penangkapan
+    JumlahTarget == 1,
+    get_idx(ListAman, NamaTarget, IdxAman),
+    IdxAman == -1, % Target tidak ada di daftar aman (lupa teriak UNI)
+    !, 
+    format('Target tertangkap basah! ~w lupa bilang UNI!~n', [NamaTarget]),
+    write('Hukuman: Tambah 2 kartu ke tangan.'), nl,
+    
+    random_ambilkartu(Kartu1),
+    random_ambilkartu(Kartu2),
+    insert_tail(ListKartu, Kartu1, TempList),
+    insert_tail(TempList, Kartu2, ListBaru),
+    retract(kartu_tangan(NamaTarget, _)),
+    assertz(kartu_tangan(NamaTarget, ListBaru)),
+    
+    jml_pemain(Jml),
+    urutan_pemain(ListNama, Idx),
+    next_giliran(Idx, NewestIdx, Jml),
+    get_idx(ListNama, NextNama, NewestIdx),
+    
+    format('Giliran ~w',[NextNama]),nl,
+    retractall(giliran(_)), assertz(giliran(NextNama)),
+    retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)). 
+
+
+tangkap(_) :-                               % kalau gagal menangkap -> kena denda 1 kartu
+    write('Gagal menangkap! Target aman atau kartunya tidak bersisa 1.'), nl,
+    
+    giliran(PemainSekarang),        % ambil status pemain sekarang lalu diberi denda
+    format('Hukuman: ~w mendapatkan 1 kartu penalti karena salah tuduh!~n', [PemainSekarang]),
+    random_ambilkartu(KartuPenalti),
+    kartu_tangan(PemainSekarang, ListKartuLama),
+    insert_tail(ListKartuLama, KartuPenalti, ListKartuBaru),
+    retract(kartu_tangan(PemainSekarang, _)),
+    assertz(kartu_tangan(PemainSekarang, ListKartuBaru)),
+    
+    jml_pemain(Jml),
+    urutan_pemain(ListNama, Idx),
+    next_giliran(Idx, NewestIdx, Jml),
+    get_idx(ListNama, NextNama, NewestIdx),
+    
+    format('Giliran ~w',[NextNama]),nl,
+    retractall(giliran(_)), assertz(giliran(NextNama)),
+    retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)). 
+
+
+% sembunyikanKartu
+sembunyikanKartu(IdxKartu):-
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),nl,fail),
+    ((efek('plus_dua') ; efek('plus_empat')) -> 
+        write('Anda tidak dapat menyembunyikan kartu saat ini!'), nl, fail
+    ; true),
+    giliran(Pemain),
+    kartu_tangan(Pemain, ListKartu),
+    panjang(0, JmlKartu, ListKartu),
+    
+    (JmlKartu > 1 -> 
+        (ambil_kartu_ke(IdxKartu, ListKartu, kartu(Warna, Jenis, Status)) ->
+            (Status == 'hide' -> 
+                write('Kartu tersebut memang sudah tersembunyi!'), nl, fail
+            ;
+                IdxK is IdxKartu - 1,
+                replace_kartu(ListKartu, IdxK, kartu(Warna, Jenis, hide), Listbaru),
+                retract(kartu_tangan(Pemain, _)),
+                assertz(kartu_tangan(Pemain, Listbaru)),
+                format('Kartu ~w-~w berhasil disembunyikan.~n', [Warna, Jenis]), nl,
+                
+                urutan_pemain(ListNama, CurrentIdx),
+                panjang(0, JmlPemain, ListNama),
+                
+                next_giliran(CurrentIdx, NewestIdx, JmlPemain),
+                get_idx(ListNama, NextNama, NewestIdx),
+                format('Giliran ~w~n',[NextNama]),
+                retractall(giliran(_)), assertz(giliran(NextNama)),
+                retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)), !
+            )
+        ; write('Nomor urut kartu tidak valid!'), nl, fail)
+    ; write('Tidak boleh menyembunyikan kartu karena hanya tersisa 1 kartu!.'), nl, fail).
+
+% tampilkanKartu
+tampilkanKartu(NomorUrut) :-
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),nl,fail),
+    ((efek('plus_dua') ; efek('plus_empat')) -> 
+        write('Anda tidak dapat menampilkan kartu saat ini!'), nl, fail
+    ; true),
+    giliran(Pemain),
+    kartu_tangan(Pemain, ListKartu),
+    
+    (ambil_kartu_ke(NomorUrut, ListKartu, kartu(Warna, Jenis, Status)) ->
+        ( Status == 'normal' ->
+            write('Kartu tersebut memang sudah ditampilkan!'), nl, fail
+        ;   
+            Index is NomorUrut - 1,
+            replace_kartu(ListKartu, Index, kartu(Warna, Jenis, normal), ListBaru),
+            retract(kartu_tangan(Pemain, _)),
+            assertz(kartu_tangan(Pemain, ListBaru)),
+            format('Kartu ~w-~w berhasil ditampilkan!~n', [Warna, Jenis]), nl,
+            
+            urutan_pemain(ListNama, CurrentIdx),
+            panjang(0, JmlPemain, ListNama),
+            
+            next_giliran(CurrentIdx, NewestIdx, JmlPemain),
+            get_idx(ListNama, NextNama, NewestIdx),
+            format('Giliran ~w~n',[NextNama]),
+            retractall(giliran(_)), assertz(giliran(NextNama)),
+            retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)), !
+        )
+    ; write('Nomor urut kartu tidak valid!'), nl, fail ).
+
+
 % Rule utama endGame
 endGame :-
     giliran(Pemenang),

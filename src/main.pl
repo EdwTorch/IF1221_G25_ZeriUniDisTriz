@@ -25,6 +25,7 @@
 :- include('kartuaksi.pl').
 :- include('tantang.pl').
 :- include('uni_tangkap.pl').
+:- include('sembunyikan.pl').
 
 % Kode StartGame Telah disanitasi
 startGame:- retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),
@@ -169,26 +170,44 @@ lihatCommand :-
     write('Aksi utama yang tersedia:'), nl,
     ( (JenisNow == 'plus_empat', efek('plus_empat')) ->
         write('1. ambilKartu'), nl,
-        write('2. tantang'), nl
+        write('2. tantang'), nl,
+        Count is 0
     ; (JenisNow == 'plus_dua', efek('plus_dua')) ->
-        write('1. ambilKartu'), nl
+        write('1. ambilKartu'), nl,
+        Count is 0
     ; ((JenisNow == 'plus_empat' ; JenisNow == 'wildcard')) ->
         warna_wild(WarnaAktif),
         (valid_play(ListKartu, WarnaAktif, JenisNow) ->
-            write('1. mainkanKartu()'), nl,
+            write('1. mainkanKartu(NomorUrut)'), nl,
             write('2. ambilKartu'), nl,
-            write('3. tangkap()'), nl
+            write('3. tangkap(Pemain)'), nl,
+            Count is 4
         ;   write('1. ambilKartu'), nl,
-            write('2. tangkap()'), nl
+            write('2. tangkap(Pemain)'), nl,
+            Count is 3
         )
     ; (valid_play(ListKartu, WarnaNow, JenisNow) ->
-        write('1. mainkanKartu()'), nl,
+        write('1. mainkanKartu(NomorUrut)'), nl,
         write('2. ambilKartu'), nl,
-        write('3. tangkap()'), nl
+        write('3. tangkap(Pemain)'), nl,
+        Count is 4
     ;   write('1. ambilKartu'), nl,
-        write('2. tangkap()'), nl)),
-    nl,
+        write('2. tangkap(Pemain)'), nl,
+        Count is 3)),
     
+    ((\+ efek('plus_dua'), \+ efek('plus_empat')) ->
+        panjang(0, JmlKartu, ListKartu),
+        count_normal(ListKartu, JmlNormal),
+        (JmlKartu > 1 ->
+            format('~d. sembunyikanKartu(NomorUrut)~n', [Count]),
+            Count1 is Count+1
+        ; Count1 is Count),
+        (JmlNormal \= JmlKartu ->
+            format('~d. tampilkanKartu(NomorUrut)~n', [Count1])
+        ; true)
+    ; true),
+
+    nl,
     write('Aksi pendukung yang tersedia:'), nl,
     write('1. lihatCommand'), nl,
     write('2. lihatKartu'), nl,
@@ -251,8 +270,6 @@ mainkanKartu(NomorUrut) :-
 
         panjang(0,PjgList,ListBaru),
         (PjgList =:=0 -> endGame,!;nl),
-        retractall(discard_top(_)),
-        assertz(discard_top(KartuPilihan)),
         
         (Jenis \== wildcard, Jenis \== plus_empat ->
             retractall(warna_wild(_))
@@ -274,7 +291,7 @@ mainkanKartu(NomorUrut) :-
         get_idx(ListNama, NextNama, NewestIdx))),
 
         retractall(discard_top(_)),
-        assertz(discard_top(KartuPilihan)),
+        assertz(discard_top(kartu(Warna, Jenis, normal))),
         retractall(giliran(_)),
         assertz(giliran(NextNama)),
         retractall(urutan_pemain(_,_)),

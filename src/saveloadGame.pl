@@ -10,8 +10,11 @@ print_formated_kartu(ListKartu,Hasil) :-
 print_formated_kartu_helper(ListKartu,Hasil,[]).
 
 print_formated_kartu_helper([],Hasil,Hasil):-!.
-print_formated_kartu_helper([HeadKartu|TailKartu],Hasil,ListSementara):-
-    ekstrak_kartu(HeadKartu,Warna,Jenis),
+print_formated_kartu_helper([kartu(Warna, Jenis, hide)|TailKartu], Hasil, ListSementara) :-
+    X = Warna-Jenis-hide,
+    insert_tail(ListSementara,X,ListBaru),
+    print_formated_kartu_helper(TailKartu,Hasil,ListBaru).
+print_formated_kartu_helper([kartu(Warna, Jenis, normal)|TailKartu],Hasil,ListSementara):-
     X = Warna-Jenis,
     insert_tail(ListSementara,X,ListBaru),
     print_formated_kartu_helper(TailKartu,Hasil,ListBaru).
@@ -41,9 +44,14 @@ compound_formated_kartu(ListKartu,FormatedListKartu):-
 compound_formated_kartu_helper(ListKartu,[],FormatedListKartu).
 
 compound_formated_kartu_helper([],FormatedListKartu,FormatedListKartu):- !.
-compound_formated_kartu_helper([HeadKartu|TailKartu],ListSementara,FormatedListKartu):-
-    HeadKartu = (Warna-Jenis), 
-    ekstrak_kartu(Element,Warna,Jenis),
+compound_formated_kartu_helper([Warna-Jenis-hide|TailKartu], ListSementara, FormatedListKartu):-
+    Element = kartu(Warna, Jenis, hide), 
+    % ekstrak_kartu(Element,Warna,Jenis),
+    insert_tail(ListSementara,Element,Listbaru),
+    compound_formated_kartu_helper(TailKartu,Listbaru,FormatedListKartu).
+compound_formated_kartu_helper([Warna-Jenis|TailKartu],ListSementara,FormatedListKartu):-
+    Element = kartu(Warna, Jenis, normal), 
+    % ekstrak_kartu(Element,Warna,Jenis),
     insert_tail(ListSementara,Element,Listbaru),
     compound_formated_kartu_helper(TailKartu,Listbaru,FormatedListKartu).
 

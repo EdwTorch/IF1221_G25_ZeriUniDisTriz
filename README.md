@@ -51,7 +51,7 @@ startGame.
 │   ├── startGame_ambilKartu.pl
 │   ├── mainkanKartu.pl
 │   ├── kartuaksi.pl
-│   ├── uni_tangkap.pl
+│   ├── sembunyikan.pl
 │   ├── tantang.pl
 │   ├── cekInfo.pl
 │   ├── lihatKartu.pl
@@ -96,6 +96,7 @@ Setiap kartu selain wild card & wild draw four memiliki 4 warna, yaitu merah, ku
 | `saveGame.` | Menyimpan permainan |
 | `loadGame.` | Memuat permainan |
 | `sembunyikanKartu(NomorUrutKartuDiTangan).` | Menyembunyikan kartu agar tidak bisa dicek pemain lain |
+| `tampilkanKartu(NomorUrutKartuDiTangan).` | Menampilkan kembali kartu yang sebelumnya disembunyikan |
 
 ## About 
 Anggota G25 ZeriUniDisTriz :

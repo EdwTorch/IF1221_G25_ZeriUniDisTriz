@@ -32,6 +32,7 @@ startGame:- retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall
     retractall(giliran(_)), retractall(discard_top(_)), retractall(kartu_tangan(_,_)), retractall(list_uni(_)),retractall(arah(_)),
     retractall(warna_sebelumnya(_)),retractall(yg_keluarin_plus4(_)),retractall(warna_wild(_)), retractall(reverse_pemain(_)), % reset semua dynamic
     
+    randomize,
     inputJml(Jml),assertz(jml_pemain(Jml)),inputPemain(Jml,DaftarPemain), assertz(arah('kanan')), assertz(list_uni([])),% input pemain dan Jumlah Pemain
 
     copy(DaftarPemain,ListPemain),     % Mengcopy Daftar Pemain ke ListPemain

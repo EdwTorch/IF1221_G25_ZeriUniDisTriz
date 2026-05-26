@@ -98,7 +98,6 @@ ambilKartu :-
 
 % Ambil kartu untuk plus 4
 ambilKartu :-
-    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),!,fail),
     efek('plus_empat'), !,
     giliran(Pemain),
     urutan_pemain(ListNama, Idx),
@@ -124,7 +123,6 @@ ambilKartu :-
 
 % Ambil kartu biasa
 ambilKartu:-
-    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),!,fail),
     random_ambilkartu(Element),ekstrak_kartu(Element,Warna,Jenis), urutan_pemain(ListNama,Idx), 
     get_idx(ListNama,Nama,Idx),jml_pemain(Jml), list_uni(ListUnii),
     
@@ -321,6 +319,8 @@ mainkanKartu(NomorUrut) :-
 
 % =============================== tantang ===============================
 tantang :-
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),fail),
+
     efek('plus_empat'),
     yg_keluarin_plus4(Tersangka),
     urutan_pemain(List, Idx),
@@ -362,6 +362,8 @@ tantang :-
 
 % =============================== uni ===============================
 uni(NomorUrut) :-
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),fail),
+    
     giliran(Pemain),
     kartu_tangan(Pemain, ListKartu),
     jml_pemain(Jml),
@@ -430,6 +432,7 @@ uni(NomorUrut) :-
 
 % =============================== tangkap ===============================
 tangkap(NamaTarget) :-
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),!,fail),
     kartu_tangan(NamaTarget, ListKartu),
     list_uni(ListAman),
     
@@ -545,6 +548,7 @@ tampilkanKartu(NomorUrut) :-
 
 % =============================== endGame ===============================
 endGame :-
+    (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),fail),
     giliran(Pemenang),
     format('Permainan selesai! ~w menghabiskan semua kartunya!~n~n', [Pemenang]),
     write('Berikut perhitungan poin sisa kartu:'), nl,

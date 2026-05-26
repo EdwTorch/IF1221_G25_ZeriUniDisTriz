@@ -1,4 +1,3 @@
-% :- include('utils.pl').
 :- dynamic(kartu_tangan/2).
 :- dynamic(arah/1).
 % fungsi input Jumlah Pemain
@@ -159,5 +158,3 @@ next_giliran(Idx,NewestIdx,Jml):-
 arah(ArahSaatini),
 (ArahSaatini == 'kanan'-> (NewIdx is Idx +1, (NewIdx>=Jml -> NewestIdx is (NewIdx mod Jml) ;NewestIdx is NewIdx));
 NewIdx is Idx-1, (NewIdx<0 -> NewestIdx is (NewIdx mod Jml);NewestIdx is NewIdx)).
-
-  

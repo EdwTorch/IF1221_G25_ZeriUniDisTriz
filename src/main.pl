@@ -27,6 +27,8 @@
 :- include('sembunyikan.pl').
 :- include('utils.pl').
 
+
+% =============================== startGame ===============================
 % Kode StartGame Telah disanitasi
 startGame:- retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),
     retractall(giliran(_)), retractall(discard_top(_)), retractall(kartu_tangan(_,_)), retractall(list_uni(_)),retractall(arah(_)),
@@ -61,6 +63,8 @@ startGame:- retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall
     nl,nl,
     format('Giliran ~w',[Pemain1]), !.
 
+
+% =============================== ambilKartu ===============================
 /*
 Alur Ambil Kartu : 
 Ngambil Kartu Secara Random (Lihat Rule nya di utils.pl), Lalu Ekstrak Warna dan Jenisnya
@@ -118,6 +122,7 @@ ambilKartu :-
     retractall(giliran(_)), assertz(giliran(NextNama)),
     retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)).
 
+% Ambil kartu biasa
 ambilKartu:-
     (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),!,fail),
     random_ambilkartu(Element),ekstrak_kartu(Element,Warna,Jenis), urutan_pemain(ListNama,Idx), 
@@ -145,6 +150,7 @@ ambilKartu:-
     assertz(urutan_pemain(ListNama,NewestIdx)). 
 
 
+% =============================== cekInfo ===============================
 cekInfo :-
     (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),fail),
     discard_top(kartu(WarnaTeratas, JenisTeratas, _)), 
@@ -161,6 +167,8 @@ cekInfo :-
     
     print_info_pemain(DaftarPemain), !.
 
+
+% =============================== lihatCommand ===============================
 lihatCommand :-
     (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),fail),
     discard_top(kartu(WarnaNow, JenisNow, _)),
@@ -168,14 +176,14 @@ lihatCommand :-
     kartu_tangan(Pemain, ListKartu),
     
     write('Aksi utama yang tersedia:'), nl,
-    ( (JenisNow == 'plus_empat', efek('plus_empat')) ->
+    ( (JenisNow == 'plus_empat', efek('plus_empat')) ->             % pemain mendapat +4
         write('1. ambilKartu'), nl,
         write('2. tantang'), nl,
         Count is 0
-    ; (JenisNow == 'plus_dua', efek('plus_dua')) ->
+    ; (JenisNow == 'plus_dua', efek('plus_dua')) ->                 % pemain mendapat +2
         write('1. ambilKartu'), nl,
         Count is 0
-    ; ((JenisNow == 'plus_empat' ; JenisNow == 'wildcard')) ->
+    ; ((JenisNow == 'plus_empat' ; JenisNow == 'wildcard')) ->      % menyesuaikan warna aktif untuk kondisi +4 dan wildcard
         warna_wild(WarnaAktif),
         (valid_play(ListKartu, WarnaAktif, JenisNow) ->
             write('1. mainkanKartu(NomorUrut)'), nl,
@@ -186,15 +194,16 @@ lihatCommand :-
             write('2. tangkap(Pemain)'), nl,
             Count is 3
         )
-    ; (valid_play(ListKartu, WarnaNow, JenisNow) ->
+    ; (valid_play(ListKartu, WarnaNow, JenisNow) ->             % pemain memiliki kartu yang cocok dengan discard top
         write('1. mainkanKartu(NomorUrut)'), nl,
         write('2. ambilKartu'), nl,
         write('3. tangkap(Pemain)'), nl,
         Count is 4
-    ;   write('1. ambilKartu'), nl,
+    ;   write('1. ambilKartu'), nl,                             % pemain tidak memiliki kartu yang cocok dengan discard top
         write('2. tangkap(Pemain)'), nl,
         Count is 3)),
     
+    % untuk sembunyikan dan tampilkan
     ((\+ efek('plus_dua'), \+ efek('plus_empat')) ->
         panjang(0, JmlKartu, ListKartu),
         count_normal(ListKartu, JmlNormal),
@@ -213,6 +222,8 @@ lihatCommand :-
     write('2. lihatKartu'), nl,
     write('3. cekInfo'), nl, !.
 
+
+% =============================== lihatKartu ===============================
 lihatKartu :-
     (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),fail),
     giliran(Pemain),
@@ -221,6 +232,8 @@ lihatKartu :-
         print_list_kartu(ListKartu, 1) ;
         write('Data kartu tidak ditemukan!'), nl), !.
 
+
+% =============================== mainkanKartu ===============================
 mainkanKartu(NomorUrut) :-
     (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),fail),
     giliran(Pemain),                      % cek giliran 
@@ -229,7 +242,7 @@ mainkanKartu(NomorUrut) :-
     jml_pemain(Jml),
 
     % cek apakah pemain terkena efek plus (tidak bisa mainkanKartu)
-    ((efek('plus_dua') ; efek('plus_empat')) -> write('Anda tidak dapat mainkanKartu saat giliran ini!'), nl, fail
+    ((efek('plus_dua') ; efek('plus_empat')) -> write('Anda tidak dapat mainkanKartu saat giliran ini!'), nl, fail        % restriksi +2 dan +4
     ; true),
 
     (   ambil_kartu_ke(NomorUrut, ListKartu, KartuPilihan)      % ambil kartu dari list
@@ -305,7 +318,8 @@ mainkanKartu(NomorUrut) :-
         fail
     ).
 
-% Tantang
+
+% =============================== tantang ===============================
 tantang :-
     efek('plus_empat'),
     yg_keluarin_plus4(Tersangka),
@@ -346,7 +360,7 @@ tantang :-
         format('Giliran ~w.', [PemainBaru])), !.
 
 
-% FUNGSI UNI
+% =============================== uni ===============================
 uni(NomorUrut) :-
     giliran(Pemain),
     kartu_tangan(Pemain, ListKartu),
@@ -413,7 +427,8 @@ uni(NomorUrut) :-
         write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl,fail
     ).
 
-% FUNGSI TANGKAP 
+
+% =============================== tangkap ===============================
 tangkap(NamaTarget) :-
     kartu_tangan(NamaTarget, ListKartu),
     list_uni(ListAman),
@@ -442,7 +457,6 @@ tangkap(NamaTarget) :-
     retractall(giliran(_)), assertz(giliran(NextNama)),
     retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)). 
 
-
 tangkap(_) :-                               % kalau gagal menangkap -> kena denda 1 kartu
     write('Gagal menangkap! Target aman atau kartunya tidak bersisa 1.'), nl,
     
@@ -464,7 +478,7 @@ tangkap(_) :-                               % kalau gagal menangkap -> kena dend
     retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)). 
 
 
-% sembunyikanKartu
+% =============================== sembunyikanKartu ===============================
 sembunyikanKartu(IdxKartu):-
     (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),nl,fail),
     ((efek('plus_dua') ; efek('plus_empat')) -> 
@@ -497,7 +511,8 @@ sembunyikanKartu(IdxKartu):-
         ; write('Nomor urut kartu tidak valid!'), nl, fail)
     ; write('Tidak boleh menyembunyikan kartu karena hanya tersisa 1 kartu!.'), nl, fail).
 
-% tampilkanKartu
+
+% =============================== tampilkanKartu ===============================
 tampilkanKartu(NomorUrut) :-
     (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),nl,fail),
     ((efek('plus_dua') ; efek('plus_empat')) -> 
@@ -528,7 +543,7 @@ tampilkanKartu(NomorUrut) :-
     ; write('Nomor urut kartu tidak valid!'), nl, fail ).
 
 
-% Rule utama endGame
+% =============================== endGame ===============================
 endGame :-
     giliran(Pemenang),
     format('Permainan selesai! ~w menghabiskan semua kartunya!~n~n', [Pemenang]),
@@ -542,6 +557,8 @@ endGame :-
     format('~nSelamat, ~w menjadi pemenang!~n', [Juara1]),
     retractall(game_started),exita.
 
+
+% =============================== saveGame ===============================
 saveGame:- 
     (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),fail),
     ((efek('plus_dua') ; efek('plus_empat')) -> write('Anda tidak dapat saveGame saat giliran ini!'), nl, fail
@@ -583,7 +600,9 @@ saveGame:-
     format('Status permainan berhasil disimpan ke ~w.txt.',[Input]),
     
     close(LoadGameFormat),!.
-    
+
+
+% =============================== loadGame ===============================
 loadGame:-
     write('Masukkan nama file yang akan dimuat: '),
     read(Input),
@@ -624,6 +643,7 @@ loadGame:-
     
     assertz(game_started),!.
 
-% Rule exitGame
+
+% =============================== exitGame ===============================
 exitGame:-  retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),
     retractall(giliran(_)), retractall(discard_top(_)), retractall(kartu_tangan(_,_)), retractall(list_uni(_)),retractall(arah(_)).

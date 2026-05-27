@@ -12,7 +12,8 @@
 :- dynamic(yg_keluarin_plus4/1). % Menyimpan nama pemain yang mengeluarkan kartu plus 4
 :- dynamic(warna_wild/1).        % Menyimpan warna aktif yang dipilih pemain setelah mengeluarkan kartu wild atau plus 4
 :- dynamic(reverse_pemain/1).    % Menyimpan list urutan pemain yang direverse
-
+:- dynamic(nama_file/1).
+:- dynamic(warna_wild_sebelumnya/1).
 % struktur kartu -> kartu(Warna, Jenis, normal/hide)
  
 :- include('startGame_ambilKartu.pl').
@@ -112,6 +113,7 @@ ambilKartu :-
 
     tambah_kartu(Pemain, 4),
     retract(efek('plus_empat')),
+    retractall(warna_wild_sebelumnya(_)),
 
     next_giliran(Idx, NewestIdx, Jml),
     get_idx(ListNama, NextNama, NewestIdx),
@@ -271,7 +273,7 @@ mainkanKartu(NomorUrut) :-
             assertz(jenis_sebelumnya(JenisMeja)),
             retractall(yg_keluarin_plus4(_)),
             assertz(yg_keluarin_plus4(Pemain))
-        ;   true
+        ;  retractall(warna_wild_sebelumnya(_)), true
         ),
         format('~w memainkan kartu: ~w-~w~n', [Pemain, Warna, Jenis]), 
         IndexHapus is NomorUrut - 1,                                       % hapus kartu di tangan                   
@@ -332,23 +334,48 @@ tantang :-
     warna_sebelumnya(WarnaLama),
     jenis_sebelumnya(JenisLama),
 
+    (JenisLama == wildcard-> retract(warna_sebelumnya(_)), warna_wild_sebelumnya(WarnaWild),
+    kartu_tangan(Tersangka, ListKartu),
+    (cek_kecocokkan(ListKartu, WarnaWild, JenisLama) ->
+        write('Tantangan berhasil!'),nl,
+        format('Pemain ~w memiliki kartu yang cocok.', [Tersangka]), nl,
+        format('Pemain ~w harus mengambil 4 kartu.', [Tersangka]), nl,
+        
+        tambah_kartu(Tersangka, 4) ;
+    
+        write('Tantangan gagal!'), nl,
+        format('~w tidak memiliki kartu yang cocok.', [Tersangka]), nl,
+        format('~w mendapatkan 6 kartu acak.', [Penantang]), nl,
+        
+        tambah_kartu(Penantang, 6)),
+        
+        retract(efek('plus_empat')),
+        urutan_pemain(ListPemain, IdxPenantang),
+        jml_pemain(Jml),
+        
+        next_giliran(IdxPenantang, IdxBaru, Jml),
+        get_idx(ListPemain, PemainBaru, IdxBaru),
+        
+        retractall(giliran(_)), assertz(giliran(PemainBaru)),retractall(warna_wild_sebelumnya(_)),
+        retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListPemain, IdxBaru)),
+        format('Giliran ~w.', [PemainBaru])), !
+    
+    ;
     kartu_tangan(Tersangka, ListKartu),
     (cek_kecocokkan(ListKartu, WarnaLama, JenisLama) ->
         write('Tantangan berhasil!'),nl,
         format('Pemain ~w memiliki kartu yang cocok.', [Tersangka]), nl,
         format('Pemain ~w harus mengambil 4 kartu.', [Tersangka]), nl,
         
-        tambah_kartu(Tersangka, 4),
-        retract(efek('plus_empat')),
-        format('Sekarang giliran ~w.', [Penantang]), nl ;
+        tambah_kartu(Tersangka, 4) ;
     
         write('Tantangan gagal!'), nl,
         format('~w tidak memiliki kartu yang cocok.', [Tersangka]), nl,
         format('~w mendapatkan 6 kartu acak.', [Penantang]), nl,
         
-        tambah_kartu(Penantang, 6),
-        retract(efek('plus_empat')),
+        tambah_kartu(Penantang, 6)),
         
+        retract(efek('plus_empat')),
         urutan_pemain(ListPemain, IdxPenantang),
         jml_pemain(Jml),
         
@@ -357,7 +384,7 @@ tantang :-
         
         retractall(giliran(_)), assertz(giliran(PemainBaru)),
         retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListPemain, IdxBaru)),
-        format('Giliran ~w.', [PemainBaru])), !.
+        format('Giliran ~w.', [PemainBaru]), !.
 
 
 % =============================== uni ===============================
@@ -642,6 +669,9 @@ loadGame:-
 
     loadkartu(Pjg,UrutanPemain,LoadFileFormat),
     
+    reverse_list(UrutanPemain, ReversedPemain),
+    assertz(reverse_pemain(ReversedPemain)),
+
     format('Status permainan berhasil dimuat dari ~w.txt.',[Input]),nl,
     format('Melanjutkan Giliran ~w.',[PemainNow]),close(LoadFileFormat),
     

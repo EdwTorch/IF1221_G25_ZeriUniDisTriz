@@ -12,7 +12,7 @@ cek_validitas(kartu(Warna, Jenis, _), kartu(_, JenisAtas, _)) :-
     (JenisAtas == wildcard ; JenisAtas == plus_empat), !,  % --> valid jika kartu di atas adalah wildcard atau +4
     warna_wild(WarnaAktif),                                   % --> valid jika warna kartu yang dimainkan sesuai dengan warna yang dipilih pada wild
     (Warna == WarnaAktif; Jenis == plus_empat;Jenis == wildcard),
-    \+ (Jenis == JenisAtas),
+    \+ (Jenis == JenisAtas),assertz(warna_wild_sebelumnya(WarnaAktif)),
     retractall(warna_wild(_)).    % --> valid jika jenis kartu yang dimainkan adalah wildcard atau +4
 
 cek_validitas(kartu(Warna, _, _), kartu(Warna, _, _)) :- !.    % --> valid jika warnanya sama

@@ -334,35 +334,13 @@ tantang :-
     warna_sebelumnya(WarnaLama),
     jenis_sebelumnya(JenisLama),
 
-    (JenisLama == wildcard-> retract(warna_sebelumnya(_)), warna_wild_sebelumnya(WarnaWild),
+    (JenisLama == wildcard->
+        warna_wild_sebelumnya(WarnaTantang)
+    ; WarnaTantang = WarnaLama),
+
     kartu_tangan(Tersangka, ListKartu),
-    (cek_kecocokkan(ListKartu, WarnaWild, JenisLama) ->
-        write('Tantangan berhasil!'),nl,
-        format('Pemain ~w memiliki kartu yang cocok.', [Tersangka]), nl,
-        format('Pemain ~w harus mengambil 4 kartu.', [Tersangka]), nl,
-        
-        tambah_kartu(Tersangka, 4) ;
-    
-        write('Tantangan gagal!'), nl,
-        format('~w tidak memiliki kartu yang cocok.', [Tersangka]), nl,
-        format('~w mendapatkan 6 kartu acak.', [Penantang]), nl,
-        
-        tambah_kartu(Penantang, 6)),
-        
-        retract(efek('plus_empat')),
-        urutan_pemain(ListPemain, IdxPenantang),
-        jml_pemain(Jml),
-        
-        next_giliran(IdxPenantang, IdxBaru, Jml),
-        get_idx(ListPemain, PemainBaru, IdxBaru),
-        
-        retractall(giliran(_)), assertz(giliran(PemainBaru)),retractall(warna_wild_sebelumnya(_)),
-        retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListPemain, IdxBaru)),
-        format('Giliran ~w.', [PemainBaru])), !
-    
-    ;
-    kartu_tangan(Tersangka, ListKartu),
-    (cek_kecocokkan(ListKartu, WarnaLama, JenisLama) ->
+
+    (cek_kecocokkan(ListKartu, WarnaTantang, JenisLama) ->
         write('Tantangan berhasil!'),nl,
         format('Pemain ~w memiliki kartu yang cocok.', [Tersangka]), nl,
         format('Pemain ~w harus mengambil 4 kartu.', [Tersangka]), nl,

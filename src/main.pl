@@ -439,7 +439,7 @@ uni(NomorUrut) :-
         
     ;   
         write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl,fail
-    ).
+    ), !.
 
 
 % =============================== tangkap ===============================

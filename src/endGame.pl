@@ -3,7 +3,7 @@ poin_kartu(Jenis, Poin) :- integer(Jenis), (Jenis =:=0 -> Poin is 1;Poin is Jeni
 poin_kartu(skip, 10) :- !.
 poin_kartu(reverse, 10) :- !.
 poin_kartu(plus_dua, 10) :- !.
-poin_kartu(wild, 20) :- !.
+poin_kartu(wildcard, 20) :- !.
 poin_kartu(plus_empat, 20) :- !.
 poin_kartu(mimic, 20) :- !.
 

@@ -282,7 +282,7 @@ mainkanKartu(NomorUrut) :-
         assertz(kartu_tangan(Pemain, ListBaru)),
 
         panjang(0,PjgList,ListBaru),
-        (PjgList =:=0 -> endGame,!;nl,
+        (PjgList =:=0 -> endGame,!,true;nl,
         
         (Jenis \== wildcard, Jenis \== plus_empat ->
             retractall(warna_wild(_))
@@ -314,15 +314,10 @@ mainkanKartu(NomorUrut) :-
         format('Giliran ~w',[NextNama]),nl,!
         ;   
         % jika tidak valid
-         KartuPilihan = kartu(Warna, Jenis, _),                             % warna jenis ditampilkan 
-        discard_top(kartu(WarnaMeja, JenisMeja, _)),
-
-        (JenisMeja == 'wildcard', Jenis == 'wildcard' ->
-            write('Kartu wildcard tidak boleh dimainkan berturut-turut!'), nl
-        ; JenisMeja == 'plus_empat', Jenis == 'plus_empat' ->
-            write('Kartu +4 tidak boleh dimainkan berturut-turut!'), nl
-        ; write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl),
-        fail)
+        
+        write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl);
+        write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl,
+        fail
     ).
 
 

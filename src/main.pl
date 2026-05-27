@@ -586,7 +586,7 @@ endGame :-
     tampilkan_peringkat(SortedList, 1),
     get_head(SortedList, Juara1),
     format('~nSelamat, ~w menjadi pemenang!~n', [Juara1]),
-    retractall(game_started),exita.
+    retractall(game_started),exitGame.
 
 
 % =============================== saveGame ===============================

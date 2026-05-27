@@ -282,7 +282,7 @@ mainkanKartu(NomorUrut) :-
         assertz(kartu_tangan(Pemain, ListBaru)),
 
         panjang(0,PjgList,ListBaru),
-        (PjgList =:=0 -> endGame,!;nl),
+        (PjgList =:=0 -> endGame,!;nl,
         
         (Jenis \== wildcard, Jenis \== plus_empat ->
             retractall(warna_wild(_))
@@ -322,7 +322,7 @@ mainkanKartu(NomorUrut) :-
         ; JenisMeja == 'plus_empat', Jenis == 'plus_empat' ->
             write('Kartu +4 tidak boleh dimainkan berturut-turut!'), nl
         ; write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl),
-        fail
+        fail)
     ).
 
 
@@ -571,7 +571,7 @@ endGame :-
     tampilkan_peringkat(SortedList, 1),
     get_head(SortedList, Juara1),
     format('~nSelamat, ~w menjadi pemenang!~n', [Juara1]),
-    retractall(game_started),exitGame.
+    retractall(game_started),exitGame,!.
 
 
 % =============================== saveGame ===============================

@@ -314,7 +314,14 @@ mainkanKartu(NomorUrut) :-
         format('Giliran ~w',[NextNama]),nl,!
         ;   
         % jika tidak valid
-        write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl,
+         KartuPilihan = kartu(Warna, Jenis, _),                             % warna jenis ditampilkan 
+        discard_top(kartu(WarnaMeja, JenisMeja, _)),
+
+        (JenisMeja == 'wildcard', Jenis == 'wildcard' ->
+            write('Kartu wildcard tidak boleh dimainkan berturut-turut!'), nl
+        ; JenisMeja == 'plus_empat', Jenis == 'plus_empat' ->
+            write('Kartu +4 tidak boleh dimainkan berturut-turut!'), nl
+        ; write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl),
         fail
     ).
 

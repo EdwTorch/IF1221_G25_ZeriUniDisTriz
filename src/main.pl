@@ -154,8 +154,12 @@ ambilKartu:-
 cekInfo :-
     (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),fail),
     discard_top(kartu(WarnaTeratas, JenisTeratas, _)), 
-    
     write('Kartu discard top: '), write(WarnaTeratas), write('-'), write(JenisTeratas), nl,
+    
+    (WarnaTeratas == 'hitam' -> 
+        warna_wild(WarnaAktif),
+        write('Warna aktif: '), write(WarnaAktif), nl
+    ; true),
     
     urutan_pemain(DaftarPemain,_),
     reverse_pemain(Reversed),

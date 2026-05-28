@@ -399,11 +399,27 @@ uni(NomorUrut) :-
     ->  true
     ;   write('Nomor urut tidak valid! Membatalkan aksi.'), nl, fail
     ),
+    
     discard_top(KartuAtas),
+    KartuAtas = kartu(WarnaMeja, JenisMeja, _),
 
     (   cek_validitas(KartuPilihan, KartuAtas)
     ->  
         KartuPilihan = kartu(Warna, Jenis, _),
+        (JenisMeja == 'plus_dua', Jenis == 'plus_dua' ->
+            write('Kartu +2 tidak boleh dimainkan berturut-turut!'), nl, fail
+        ; true),
+
+        (Jenis == 'plus_empat' ->
+            retractall(warna_sebelumnya(_)),
+            assertz(warna_sebelumnya(WarnaMeja)),
+            retractall(jenis_sebelumnya(_)),
+            assertz(jenis_sebelumnya(JenisMeja)),
+            retractall(yg_keluarin_plus4(_)),
+            assertz(yg_keluarin_plus4(Pemain))
+        ;  retractall(warna_wild_sebelumnya(_)), true
+        ),
+
         format('~w teriak "UNI!" dan memainkan kartu: ~w-~w~n', [Pemain, Warna, Jenis]), 
         IndexHapus is NomorUrut - 1,
         del(ListKartu, IndexHapus, ListBaru),
@@ -417,6 +433,10 @@ uni(NomorUrut) :-
         ListAmanBaru = [Pemain | ListAmanLama],
         retract(list_uni(ListAmanLama)),
         assertz(list_uni(ListAmanBaru)),
+        (Jenis \== wildcard, Jenis \== plus_empat ->
+            retractall(warna_wild(_))
+        ;   true
+        ),
 
         efek_aksi(Jenis),                       % untuk perpindahan giliran setelah berhasil lempar kartu
         (Jenis == 'skip' ->             

@@ -314,11 +314,9 @@ mainkanKartu(NomorUrut) :-
         assertz(urutan_pemain(ListNama, NewestIdx)),
 
         nl, write('--- Giliran Selesai ---'), nl,                          % ganti giliran
-        format('Giliran ~w',[NextNama]),nl,!
-        ;   
-        % jika tidak valid
+        format('Giliran ~w',[NextNama]),nl,!)
         
-        write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl);
+        ;
         (\+(JenisMeja == wildcard), \+ (JenisMeja==plus_empat)),
         write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl,
         fail
@@ -329,7 +327,9 @@ mainkanKartu(NomorUrut) :-
 tantang :-
     (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),fail),
 
-    efek('plus_empat'),
+    (efek('plus_empat') -> true; 
+        write('Tidak bisa menantang saat ini, belum ada orang yang mengeluarkan kartu wild draw four (+4).'), nl, fail),
+
     yg_keluarin_plus4(Tersangka),
     urutan_pemain(List, Idx),
     get_idx(List, Penantang, Idx),
@@ -401,11 +401,27 @@ uni(NomorUrut) :-
     ->  true
     ;   write('Nomor urut tidak valid! Membatalkan aksi.'), nl, fail
     ),
+    
     discard_top(KartuAtas),
+    KartuAtas = kartu(WarnaMeja, JenisMeja, _),
 
     (   cek_validitas(KartuPilihan, KartuAtas)
     ->  
         KartuPilihan = kartu(Warna, Jenis, _),
+        (JenisMeja == 'plus_dua', Jenis == 'plus_dua' ->
+            write('Kartu +2 tidak boleh dimainkan berturut-turut!'), nl, fail
+        ; true),
+
+        (Jenis == 'plus_empat' ->
+            retractall(warna_sebelumnya(_)),
+            assertz(warna_sebelumnya(WarnaMeja)),
+            retractall(jenis_sebelumnya(_)),
+            assertz(jenis_sebelumnya(JenisMeja)),
+            retractall(yg_keluarin_plus4(_)),
+            assertz(yg_keluarin_plus4(Pemain))
+        ;  retractall(warna_wild_sebelumnya(_)), true
+        ),
+
         format('~w teriak "UNI!" dan memainkan kartu: ~w-~w~n', [Pemain, Warna, Jenis]), 
         IndexHapus is NomorUrut - 1,
         del(ListKartu, IndexHapus, ListBaru),
@@ -419,6 +435,10 @@ uni(NomorUrut) :-
         ListAmanBaru = [Pemain | ListAmanLama],
         retract(list_uni(ListAmanLama)),
         assertz(list_uni(ListAmanBaru)),
+        (Jenis \== wildcard, Jenis \== plus_empat ->
+            retractall(warna_wild(_))
+        ;   true
+        ),
 
         efek_aksi(Jenis),                       % untuk perpindahan giliran setelah berhasil lempar kartu
         (Jenis == 'skip' ->             
@@ -584,6 +604,7 @@ saveGame:-
     arah(ArahPermainan),
     discard_top(KartuAtas),
     ekstrak_kartu(KartuAtas,Warna,Jenis),
+    (warna_wild(WarnaWild)->true;WarnaWild=none),
 
     write('Masukkan nama file penyimpanan: '),
     read(Input),
@@ -600,8 +621,10 @@ saveGame:-
     format(LoadGameFormat,'discard_top:~w-~w.',[Warna,Jenis]),
     nl(LoadGameFormat),
     
+    (Warna== hitam -> format(LoadGameFormat,'warna_aktif:~w.',[WarnaWild]),nl(LoadGameFormat);
     format(LoadGameFormat,'warna_aktif:~w.',[Warna]),
-    nl(LoadGameFormat),
+    nl(LoadGameFormat)
+    ),
     
     format(LoadGameFormat,'arah_permainan:~q.',[ArahPermainan]),
     nl(LoadGameFormat),
@@ -642,7 +665,8 @@ loadGame:-
     Element = kartu(Warna,Jenis,normal),
     assertz(discard_top(Element)),
     
-    readformat(LoadFileFormat,_), % warna aktif (g dipake)
+    readformat(LoadFileFormat,WarnaWild), % warna aktif (g dipake)
+    (Warna==hitam-> assertz(warna_wild(WarnaWild)); true),
 
     readformat(LoadFileFormat,ArahPermainan),
     assertz(arah(ArahPermainan)),

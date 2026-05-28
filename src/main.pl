@@ -615,6 +615,7 @@ saveGame:-
 
 % =============================== loadGame ===============================
 loadGame:-
+    ((game_started)-> write('Maaf loadGame hanya dapat dilakukan sebelum startGame'),nl,fail;true),
     write('Masukkan nama file yang akan dimuat: '),
     read(Input),
     ((nama_file(Input)) -> true; write('Maaf Nama file yang anda masukkan tidak tersedia'),fail),

@@ -251,13 +251,12 @@ mainkanKartu(NomorUrut) :-
     ),
     discard_top(KartuAtas),             % cek kartu teratas
 
-
+    discard_top(kartu(WarnaMeja, JenisMeja, _)),
     % Validasi kartu dimainkan
     (   cek_validitas(KartuPilihan, KartuAtas)
     ->  
         % jika valid
         KartuPilihan = kartu(Warna, Jenis, _),                             % warna jenis ditampilkan 
-        discard_top(kartu(WarnaMeja, JenisMeja, _)),
 
 
         % Mencegah plus 2 berturut-turut
@@ -316,6 +315,7 @@ mainkanKartu(NomorUrut) :-
         % jika tidak valid
         
         write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl);
+        (\+(JenisMeja == wildcard), \+ (JenisMeja==plus_empat)),
         write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl,
         fail
     ).

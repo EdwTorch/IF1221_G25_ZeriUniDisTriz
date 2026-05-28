@@ -327,7 +327,9 @@ mainkanKartu(NomorUrut) :-
 tantang :-
     (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),fail),
 
-    efek('plus_empat'),
+    (efek('plus_empat') -> true; 
+        write('Tidak bisa menantang saat ini, belum ada orang yang mengeluarkan kartu wild draw four (+4).'), nl, fail),
+
     yg_keluarin_plus4(Tersangka),
     urutan_pemain(List, Idx),
     get_idx(List, Penantang, Idx),

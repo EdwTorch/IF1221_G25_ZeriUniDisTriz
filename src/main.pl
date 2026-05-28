@@ -610,7 +610,7 @@ saveGame:-
 
     format('Status permainan berhasil disimpan ke ~w.txt.',[Input]),
     
-    close(LoadGameFormat),!.
+    close(LoadGameFormat), exitGame, !.
 
 
 % =============================== loadGame ===============================

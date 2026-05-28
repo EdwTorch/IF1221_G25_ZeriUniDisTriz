@@ -582,7 +582,7 @@ saveGame:-
     arah(ArahPermainan),
     discard_top(KartuAtas),
     ekstrak_kartu(KartuAtas,Warna,Jenis),
-    warna_wild(WarnaWild),
+    (warna_wild(WarnaWild)->true;WarnaWild=none),
 
     write('Masukkan nama file penyimpanan: '),
     read(Input),

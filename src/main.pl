@@ -618,12 +618,14 @@ loadGame:-
     ((game_started)-> write('Maaf loadGame hanya dapat dilakukan sebelum startGame'),nl,fail;true),
     write('Masukkan nama file yang akan dimuat: '),
     read(Input),
-    ((nama_file(Input)) -> true; write('Maaf Nama file yang anda masukkan tidak tersedia'),fail),
 
+    insert_txt(Input,LoadFileName),
+    (file_exists(LoadFileName) -> true
+    ; write('Maaf Nama file yang anda masukkan tidak tersedia'), fail),
+    
     retractall(jml_pemain(_)),retractall(urutan_pemain(_,_)), retractall(efek(_)), retractall(game_started),
     retractall(giliran(_)), retractall(discard_top(_)), retractall(kartu_tangan(_,_)), retractall(list_uni(_)),retractall(arah(_)),
     
-    insert_txt(Input,LoadFileName),
     open(LoadFileName,read,LoadFileFormat),
     readformat(LoadFileFormat,UrutanPemain),
     readformat(LoadFileFormat,PemainNow),

@@ -1,8 +1,8 @@
-urutan_pemain: ['V','A'].
-giliran:'A'.
-discard_top:biru-7.
-warna_aktif:biru.
+urutan_pemain: ['B','A'].
+giliran:'B'.
+discard_top:hitam-wildcard.
+warna_aktif:merah.
 arah_permainan:kanan.
 status_UNI:[].
-kartu('V'):[merah-reverse,hitam-wildcard,hitam-plus_empat,merah-8,hijau-9,hijau-skip,hitam-wildcard,merah-plus_dua].
-kartu('A'):[merah-3,merah-7,biru-reverse,biru-8,hitam-plus_empat,hitam-wildcard,merah-6].
+kartu('B'):[hijau-9,biru-7,kuning-skip,hijau-4,kuning-reverse,kuning-2,merah-8,biru-8,hijau-6,hitam-plus_empat].
+kartu('A'):[merah-8,hijau-4,hijau-plus_dua,kuning-2,hitam-wildcard,merah-6,kuning-skip,merah-2].

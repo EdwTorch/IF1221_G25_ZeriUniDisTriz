@@ -314,11 +314,9 @@ mainkanKartu(NomorUrut) :-
         assertz(urutan_pemain(ListNama, NewestIdx)),
 
         nl, write('--- Giliran Selesai ---'), nl,                          % ganti giliran
-        format('Giliran ~w',[NextNama]),nl,!
-        ;   
-        % jika tidak valid
+        format('Giliran ~w',[NextNama]),nl,!)
         
-        write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl);
+        ;
         (\+(JenisMeja == wildcard), \+ (JenisMeja==plus_empat)),
         write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl,
         fail
@@ -584,6 +582,7 @@ saveGame:-
     arah(ArahPermainan),
     discard_top(KartuAtas),
     ekstrak_kartu(KartuAtas,Warna,Jenis),
+    warna_wild(WarnaWild),
 
     write('Masukkan nama file penyimpanan: '),
     read(Input),
@@ -600,8 +599,10 @@ saveGame:-
     format(LoadGameFormat,'discard_top:~w-~w.',[Warna,Jenis]),
     nl(LoadGameFormat),
     
+    (Warna== hitam -> format(LoadGameFormat,'warna_aktif:~w.',[WarnaWild]),nl(LoadGameFormat);
     format(LoadGameFormat,'warna_aktif:~w.',[Warna]),
-    nl(LoadGameFormat),
+    nl(LoadGameFormat)
+    ),
     
     format(LoadGameFormat,'arah_permainan:~q.',[ArahPermainan]),
     nl(LoadGameFormat),
@@ -642,7 +643,8 @@ loadGame:-
     Element = kartu(Warna,Jenis,normal),
     assertz(discard_top(Element)),
     
-    readformat(LoadFileFormat,_), % warna aktif (g dipake)
+    readformat(LoadFileFormat,WarnaWild), % warna aktif (g dipake)
+    (Warna==hitam-> assertz(warna_wild(WarnaWild)); true),
 
     readformat(LoadFileFormat,ArahPermainan),
     assertz(arah(ArahPermainan)),

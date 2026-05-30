@@ -260,7 +260,7 @@ mainkanKartu(NomorUrut) :-
     (   cek_validitas(KartuPilihan, KartuAtas)
     ->  
         % jika valid
-        KartuPilihan = kartu(Warna, Jenis, _),                             % warna jenis ditampilkan 
+        (KartuPilihan = kartu(Warna, Jenis, _),                             % warna jenis ditampilkan 
 
 
         % Mencegah plus 2 berturut-turut
@@ -314,7 +314,7 @@ mainkanKartu(NomorUrut) :-
         assertz(urutan_pemain(ListNama, NewestIdx)),
 
         nl, write('--- Giliran Selesai ---'), nl,                          % ganti giliran
-        format('Giliran ~w',[NextNama]),nl,!)
+        format('Giliran ~w',[NextNama]),nl,!))
         
         ;
         (\+(JenisMeja == wildcard), \+ (JenisMeja==plus_empat)),

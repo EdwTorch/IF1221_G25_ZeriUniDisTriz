@@ -178,7 +178,8 @@ lihatCommand :-
     discard_top(kartu(WarnaNow, JenisNow, _)),
     giliran(Pemain),
     kartu_tangan(Pemain, ListKartu),
-    
+    panjang(0,JmlKartu,ListKartu),
+
     write('Aksi utama yang tersedia:'), nl,
     ( (JenisNow == 'plus_empat', efek('plus_empat')) ->             % pemain mendapat +4
         write('1. ambilKartu'), nl,
@@ -189,23 +190,39 @@ lihatCommand :-
         Count is 0
     ; ((JenisNow == 'plus_empat' ; JenisNow == 'wildcard')) ->      % menyesuaikan warna aktif untuk kondisi +4 dan wildcard
         warna_wild(WarnaAktif),
-        (valid_play(ListKartu, WarnaAktif, JenisNow) ->
+        (valid_play(ListKartu, WarnaAktif, JenisNow),JmlKartu>2 ->
             write('1. mainkanKartu(NomorUrut)'), nl,
             write('2. ambilKartu'), nl,
             write('3. tangkap(Pemain)'), nl,
             Count is 4
-        ;   write('1. ambilKartu'), nl,
+        ;   ((valid_play(ListKartu,WarnaAktif,JenisNow),JmlKartu=:=2)->
+            write('1. mainkanKartu(NomorUrut)'), nl,
+            write('2. ambilKartu'), nl,
+            write('3. tangkap(Pemain)'), nl,
+            write('4. uni(NomorUrut)'),nl,        
+            Count is 5
+        ;
+            write('1. ambilKartu'), nl,
             write('2. tangkap(Pemain)'), nl,
             Count is 3
-        )
-    ; (valid_play(ListKartu, WarnaNow, JenisNow) ->             % pemain memiliki kartu yang cocok dengan discard top
+        ))
+    ; (valid_play(ListKartu, WarnaNow, JenisNow),JmlKartu>2 ->             % pemain memiliki kartu yang cocok dengan discard top
         write('1. mainkanKartu(NomorUrut)'), nl,
         write('2. ambilKartu'), nl,
         write('3. tangkap(Pemain)'), nl,
         Count is 4
-    ;   write('1. ambilKartu'), nl,                             % pemain tidak memiliki kartu yang cocok dengan discard top
+    ; (valid_play(ListKartu, WarnaNow, JenisNow),JmlKartu=:=2 ->
+        write('1. mainkanKartu(NomorUrut)'), nl,
+        write('2. ambilKartu'), nl,
+        write('3. tangkap(Pemain)'), nl,
+        write('4. uni(NomorUrut)'),nl,
+        Count is 5
+        ;
+        write('1. ambilKartu'), nl,                             % pemain tidak memiliki kartu yang cocok dengan discard top
         write('2. tangkap(Pemain)'), nl,
-        Count is 3)),
+        Count is 3)
+    
+    )),
     
     % untuk sembunyikan dan tampilkan
     ((\+ efek('plus_dua'), \+ efek('plus_empat')) ->
@@ -396,7 +413,8 @@ uni(NomorUrut) :-
 
     urutan_pemain(ListNama, Idx),
     jml_pemain(Jml),
-
+    ((efek('plus_dua');efek('plus_empat')) -> write('Anda tidak dapat menyerukan UNI dan memainkan kartu saat terkena +4 atau +2'),
+    nl,fail;true),
     (   ambil_kartu_ke(NomorUrut, ListKartu, KartuPilihan)
     ->  true
     ;   write('Nomor urut tidak valid! Membatalkan aksi.'), nl, fail
@@ -457,6 +475,7 @@ uni(NomorUrut) :-
         format('Giliran ~w~n',[NextNama])
         
     ;   
+        (\+(JenisMeja == wildcard), \+ (JenisMeja==plus_empat)),
         write('Kartu tidak valid! Warna atau angkanya tidak cocok dengan kartu di meja.'), nl,fail
     ), !.
 

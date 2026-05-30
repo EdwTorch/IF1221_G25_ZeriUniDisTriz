@@ -543,7 +543,7 @@ sembunyikanKartu(IdxKartu):-
                 retractall(urutan_pemain(_,_)), assertz(urutan_pemain(ListNama, NewestIdx)), !
             )
         ; write('Nomor urut kartu tidak valid!'), nl, fail)
-    ; write('Tidak boleh menyembunyikan kartu karena hanya tersisa 1 kartu!.'), nl, fail).
+    ; write('Tidak boleh menyembunyikan kartu karena hanya tersisa 1 kartu!'), nl, fail).
 
 
 % =============================== tampilkanKartu ===============================

@@ -581,6 +581,11 @@ tampilkanKartu(NomorUrut) :-
 endGame :-
     (game_started -> true; write('Maaf Fitur ini tidak dapat digunakan jika belum startGame atau loadGame'),fail),
     giliran(Pemenang),
+    
+    kartu_tangan(Pemenang, ListKartu),
+    panjang(0,Pjg,ListKartu),
+    (Pjg =\= 0 -> write('Permainan belum berakhir!'), nl, fail ; true),
+
     format('Permainan selesai! ~w menghabiskan semua kartunya!~n~n', [Pemenang]),
     write('Berikut perhitungan poin sisa kartu:'), nl,
     urutan_pemain(DaftarPemain,_),

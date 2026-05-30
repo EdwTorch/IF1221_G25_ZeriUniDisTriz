@@ -642,7 +642,7 @@ saveGame:-
 
 % =============================== loadGame ===============================
 loadGame:-
-    ((game_started)-> write('Maaf loadGame hanya dapat dilakukan sebelum startGame'),nl,fail;true),
+    ((game_started)-> write('Maaf loadGame hanya dapat dilakukan sebelum game dimulai'),nl,fail;true),
     write('Masukkan nama file yang akan dimuat: '),
     read(Input),
 

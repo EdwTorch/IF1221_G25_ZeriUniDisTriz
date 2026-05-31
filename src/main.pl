@@ -228,7 +228,7 @@ lihatCommand :-
     ((\+ efek('plus_dua'), \+ efek('plus_empat')) ->
         panjang(0, JmlKartu, ListKartu),
         count_normal(ListKartu, JmlNormal),
-        (JmlKartu > 1 ->
+        (JmlKartu > 1, JmlNormal \= 0 ->
             format('~d. sembunyikanKartu(NomorUrut)~n', [Count]),
             Count1 is Count+1
         ; Count1 is Count),
